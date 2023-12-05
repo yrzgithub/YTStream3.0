@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">YTStream 3.0</string>
+    <string name="none">none</string>
+    <string name="_0_0">0.00</string>
+    <string name="thumb">thumbnail</string>
+    <string name="search">search</string>
+</resources>
