@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -38,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         bar = findViewById(R.id.seek);
 
         load_gif(this,thumbnail,R.drawable.yt);
-
     }
 
     @Override
@@ -52,12 +54,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public boolean onQueryTextSubmit(String query) {
 
                 if(!query.isEmpty()) {
-
-                    Log.e("uruttu_query",query);
-                   PlaySong song = new PlaySong(MainActivity.this,query);
-                   //song.start();
-
-                    new Thread(song).start();
+                  PlaySong play = new PlaySong(query);
+                   play.start();
                 }
 
                 return false;
