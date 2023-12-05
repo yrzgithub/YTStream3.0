@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/title"
+        android:text="@string/hello_cutie"
         android:layout_weight=".2"
         android:gravity="fill"
         android:ellipsize="marquee"
@@ -29,6 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:src="@drawable/yt"
         android:id="@+id/thumb"
         android:contentDescription="@string/thumb" />
 

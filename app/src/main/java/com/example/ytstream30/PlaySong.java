@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,9 +39,12 @@ class PlaySong extends Thread
 
     DataRetriever retriever;
     String query;
+    TextView title;
     Activity act;
     ExoPlayer player;
     ImageView thumbnail;
+    int total_duration;
+    SeekBar seek;
 
     PlaySong(Activity activity,String query)
     {
@@ -48,6 +54,8 @@ class PlaySong extends Thread
         // UI
 
         this.thumbnail = activity.findViewById(R.id.thumb);
+        title = act.findViewById(R.id.title);
+        seek = activity.findViewById(R.id.seek);
 
         player = new ExoPlayer.Builder(activity).build();
     }
@@ -60,24 +68,54 @@ class PlaySong extends Thread
         retriever.fetch();
         Song song = retriever.get();
 
-        String stream_url = song.getStream_url();
-        String thumbnail_url = song.getThumbnail_url();
-
         act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
-                MainActivity.load_gif(thumbnail,thumbnail_url);
-
-                MediaItem item = MediaItem.fromUri(stream_url);
-                player.setMediaItem(item);
-                player.prepare();
-                player.play();
-
-                Glide.with(thumbnail).load(Uri.parse(thumbnail_url)).into(thumbnail);
+                updateUI(song);
             }
         });
     }
+
+    public void updateUI(Song song)
+    {
+        String stream_url = song.getStream_url();
+        String thumbnail_url = song.getThumbnail_url();
+        String title = song.getTitle();
+
+        MainActivity.load_gif(thumbnail,thumbnail_url);
+        this.title.setText(title);
+
+        MediaItem item = MediaItem.fromUri(stream_url);
+        player.setMediaItem(item);
+        player.prepare();
+        player.play();
+
+        int total_duration = (int) player.getDuration();
+
+        updateSeek(total_duration);
+
+        Glide.with(thumbnail).load(Uri.parse(thumbnail_url)).into(thumbnail);
+    }
+
+    public void updateSeek()
+    {
+        Handler handler = new Handler();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                int buffered_duration = player.getBufferedPercentage();
+                int current_position = (int) player.getCurrentPosition();
+
+                Log.e("uruttu_buffer",String.valueOf(buffered_duration));
+
+                seek.setProgress(current_position);
+                seek.setSecondaryProgress(buffered_duration);
+
+                handler.postDelayed(this,1000);
+            }
+        });
+    }
+
 }
 
 

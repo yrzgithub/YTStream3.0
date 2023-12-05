@@ -41,6 +41,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pause_or_play = findViewById(R.id.play);
         bar = findViewById(R.id.seek);
 
+        // Marquee
+        title.post(new Runnable() {
+            @Override
+            public void run() {
+                title.setSelected(true);
+            }
+        });
+
         load_gif(thumbnail,R.drawable.yt);
     }
 
@@ -62,16 +70,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     PlaySong play = new PlaySong(MainActivity.this,query);
                     play.start();
-
-                    new Runnable() {
-                        @Override
-                        public void run() {
-
-                        }
-                    };
-
-                    Handler h = new Handler();
-
                 }
 
                 return false;
