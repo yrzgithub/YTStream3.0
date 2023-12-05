@@ -1,5 +1,6 @@
 package com.example.ytstream30;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -8,6 +9,8 @@ import android.os.Handler;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -28,23 +31,25 @@ import com.google.android.exoplayer2.source.MediaSource;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 
 
-class PlaySong extends Thread
+class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.OnClickListener
 {
 
     DataRetriever retriever;
     String query;
-    TextView title;
+    TextView title,start,end;
     Activity act;
     ExoPlayer player;
     ImageView thumbnail;
-    int total_duration;
+    Runnable seek_runnable;
     SeekBar seek;
+    ImageButton backward,forward,pause_or_play;
 
     PlaySong(Activity activity,String query)
     {
@@ -56,6 +61,13 @@ class PlaySong extends Thread
         this.thumbnail = activity.findViewById(R.id.thumb);
         title = act.findViewById(R.id.title);
         seek = activity.findViewById(R.id.seek);
+        start = activity.findViewById(R.id.start);
+        end = activity.findViewById(R.id.end);
+        backward = activity.findViewById(R.id.backward);
+        forward = activity.findViewById(R.id.forward);
+        pause_or_play = activity.findViewById(R.id.play);
+
+        seek.setOnSeekBarChangeListener(this);
 
         player = new ExoPlayer.Builder(activity).build();
     }
@@ -76,8 +88,23 @@ class PlaySong extends Thread
         });
     }
 
+    public void forward()
+    {
+        player.seekTo(Math.round(player.getCurrentPosition()/1000) + 5);
+    }
+
+    public void backward()
+    {
+        player.seekTo(Math.round(player.getCurrentPosition()/1000) - 5);
+    }
+
     public void updateUI(Song song)
     {
+
+        Log.e("uruttu_duration",String.valueOf(song.getDuration()));
+
+        seek.setMax((int) song.getDuration());
+
         String stream_url = song.getStream_url();
         String thumbnail_url = song.getThumbnail_url();
         String title = song.getTitle();
@@ -90,32 +117,69 @@ class PlaySong extends Thread
         player.prepare();
         player.play();
 
-        int total_duration = (int) player.getDuration();
-
-        updateSeek(total_duration);
+        updateSeek();
 
         Glide.with(thumbnail).load(Uri.parse(thumbnail_url)).into(thumbnail);
+    }
+
+    public void destroyPlayer()
+    {
+        player.pause();
+        player.stop();
+        player.release();
     }
 
     public void updateSeek()
     {
         Handler handler = new Handler();
-        handler.post(new Runnable() {
+
+        seek_runnable = new Runnable() {
             @Override
             public void run() {
-                int buffered_duration = player.getBufferedPercentage();
-                int current_position = (int) player.getCurrentPosition();
 
-                Log.e("uruttu_buffer",String.valueOf(buffered_duration));
+                int buffered_position = Math.round(player.getBufferedPosition() / 1000);
+                int current_position = Math.round(player.getCurrentPosition() / 1000);
+
+                Log.e("uruttu_buffer",String.valueOf(current_position));
 
                 seek.setProgress(current_position);
-                seek.setSecondaryProgress(buffered_duration);
+                seek.setSecondaryProgress(buffered_position);
 
                 handler.postDelayed(this,1000);
             }
-        });
+        };
+
+        handler.post(seek_runnable);
     }
 
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if(fromUser)
+        {
+            player.seekTo(progress*1000);
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        if(player.isPlaying()) player.pause();
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        if(!player.isPlaying()) player.play();
+    }
+
+    @Override
+    public void onClick(View v) {
+        final int i = R.id.play;
+
+        switch (v.getId())
+        {
+            case R.id.forward:
+                break;
+        }
+    }
 }
 
 
@@ -182,12 +246,12 @@ class Song
 
         title = videoData.getOrDefault(PyObject.fromJava("title"),null).toJava(String.class);
         yt_url = videoData.getOrDefault(PyObject.fromJava("url"),null).toJava(String.class);
-//        publishedTime = videoData.getOrDefault(PyObject.fromJava("publishedTime"),null).toJava(String.class);
-        //   duration = Float.parseFloat(videoData.getOrDefault(PyObject.fromJava("duration"),null).toJava(String.class));
+        publishedTime = videoData.getOrDefault(PyObject.fromJava("publishedTime"),null).toJava(String.class);
         viewCount = videoData.getOrDefault(PyObject.fromJava("viewCount"),null).toJava(String.class);
         thumbnail_url = videoData.getOrDefault(PyObject.fromJava("thumbnail"),null).toJava(String.class);
         channel = videoData.getOrDefault(PyObject.fromJava("channel"),null).toJava(String.class);
-        //  error = videoData.getOrDefault(PyObject.fromJava("error"),null).toJava(String.class);
+
+        duration = durationConvert(videoData.getOrDefault(PyObject.fromJava("duration"),null).toJava(String.class));
     }
 
     public Song(String yt_url, String stream_url, String thumbnail_url, String title, String error, String publishedTime, String channel, String viewCount, float duration) {
@@ -200,6 +264,22 @@ class Song
         this.channel = channel;
         this.viewCount = viewCount;
         this.duration = duration;
+    }
+
+    public float durationConvert(String str)
+    {
+        String[] duration_string = str.split(":");
+        int duration_string_length = duration_string.length;
+
+        float duration = 0;
+
+        for(int index=0;index<duration_string_length;++index)
+        {
+            duration += Math.pow(60,duration_string_length-index-1) * Float.parseFloat(duration_string[index]);
+            Log.e("uruttu__duration", String.valueOf(Math.pow(60,index)));
+        }
+
+        return duration;
     }
 
     public String getYt_url() {
