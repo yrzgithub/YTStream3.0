@@ -9,6 +9,7 @@ import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,8 +55,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public boolean onQueryTextSubmit(String query) {
 
                 if(!query.isEmpty()) {
-                  PlaySong play = new PlaySong(query);
-                   play.start();
+
+                    PlaySong play = new PlaySong(MainActivity.this,query);
+                    play.start();
                 }
 
                 return false;

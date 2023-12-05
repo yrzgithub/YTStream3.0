@@ -17,6 +17,7 @@ import com.google.android.exoplayer2.BasePlayer;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 
@@ -33,10 +34,15 @@ class PlaySong extends Thread
 
     DataRetriever retriever;
     String query;
+    Activity act;
+    ExoPlayer player;
 
-    PlaySong(String query)
+    PlaySong(Activity activity,String query)
     {
         this.query = query;
+        this.act = activity;
+
+        player = new ExoPlayer.Builder(activity).build();
     }
 
     @Override
@@ -46,6 +52,16 @@ class PlaySong extends Thread
         retriever = new DataRetriever(this.query);
         retriever.fetch();
         Song song = retriever.get();
+
+        act.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MediaItem item = MediaItem.fromUri(song.getStream_url());
+                player.setMediaItem(item);
+                player.prepare();
+                player.play();
+            }
+        });
     }
 }
 
