@@ -3,6 +3,7 @@ package com.example.ytstream30;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -14,13 +15,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -37,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         title = findViewById(R.id.title);
         thumbnail = findViewById(R.id.thumb);
         backward = findViewById(R.id.backward);
-        forward = findViewById(R.id.forward);
+        forward = findViewById(R.id.forward_btn);
         pause_or_play = findViewById(R.id.play);
         bar = findViewById(R.id.seek);
 
@@ -57,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getMenuInflater().inflate(R.menu.menu,menu);
 
         SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
+
         if(search==null) return false;
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -77,6 +84,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                DataRetriever retriever = new DataRetriever(newText);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                }).start();
                 return false;
             }
         });

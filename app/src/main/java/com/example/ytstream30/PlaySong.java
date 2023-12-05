@@ -3,6 +3,7 @@ package com.example.ytstream30;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -10,8 +11,10 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -30,6 +33,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +42,7 @@ import java.util.stream.Collectors;
 
 
 
-class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.OnClickListener
+class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.Listener
 {
 
     DataRetriever retriever;
@@ -50,6 +54,8 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.O
     Runnable seek_runnable;
     SeekBar seek;
     ImageButton backward,forward,pause_or_play;
+    Song song;
+    Handler handler = new Handler();
 
     PlaySong(Activity activity,String query)
     {
@@ -64,12 +70,33 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.O
         start = activity.findViewById(R.id.start);
         end = activity.findViewById(R.id.end);
         backward = activity.findViewById(R.id.backward);
-        forward = activity.findViewById(R.id.forward);
+        forward = activity.findViewById(R.id.forward_btn);
         pause_or_play = activity.findViewById(R.id.play);
 
         seek.setOnSeekBarChangeListener(this);
 
         player = new ExoPlayer.Builder(activity).build();
+
+        forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                forward();
+            }
+        });
+
+        backward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backward();
+            }
+        });
+
+        pause_or_play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                play_or_pause();
+            }
+        });
     }
 
     @Override
@@ -78,7 +105,7 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.O
 
         retriever = new DataRetriever(this.query);
         retriever.fetch();
-        Song song = retriever.get();
+        song = retriever.get();
 
         act.runOnUiThread(new Runnable() {
             @Override
@@ -88,26 +115,47 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.O
         });
     }
 
+    @Override
+    public void onPlaybackStateChanged(int playbackState) {
+        Player.Listener.super.onPlaybackStateChanged(playbackState);
+    }
+
     public void forward()
     {
-        player.seekTo(Math.round(player.getCurrentPosition()/1000) + 5);
+        player.seekTo(player.getCurrentPosition()+ 5000);
     }
 
     public void backward()
     {
-        player.seekTo(Math.round(player.getCurrentPosition()/1000) - 5);
+        player.seekTo(player.getCurrentPosition() - 5000);
+    }
+
+    public void play_or_pause()
+    {
+        if(player.isPlaying())
+        {
+            player.pause();
+            pause_or_play.setImageResource(R.drawable.play);
+        }
+        else
+        {
+            player.play();
+            pause_or_play.setImageResource(R.drawable.pause);
+        }
     }
 
     public void updateUI(Song song)
     {
-
-        Log.e("uruttu_duration",String.valueOf(song.getDuration()));
-
         seek.setMax((int) song.getDuration());
 
         String stream_url = song.getStream_url();
         String thumbnail_url = song.getThumbnail_url();
         String title = song.getTitle();
+        String duration = song.getDuration_str();
+
+        Log.e("uruttu_duration_str",duration);
+
+        this.end.setText(duration);
 
         MainActivity.load_gif(thumbnail,thumbnail_url);
         this.title.setText(title);
@@ -116,6 +164,8 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.O
         player.setMediaItem(item);
         player.prepare();
         player.play();
+
+        pause_or_play.setImageResource(R.drawable.pause);
 
         updateSeek();
 
@@ -131,8 +181,6 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.O
 
     public void updateSeek()
     {
-        Handler handler = new Handler();
-
         seek_runnable = new Runnable() {
             @Override
             public void run() {
@@ -140,12 +188,14 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.O
                 int buffered_position = Math.round(player.getBufferedPosition() / 1000);
                 int current_position = Math.round(player.getCurrentPosition() / 1000);
 
-                Log.e("uruttu_buffer",String.valueOf(current_position));
-
                 seek.setProgress(current_position);
                 seek.setSecondaryProgress(buffered_position);
 
-                handler.postDelayed(this,1000);
+                String start = String.format("%2d.%02d",current_position/60,current_position%60);
+
+                PlaySong.this.start.setText(start);
+
+                if(player.getPlaybackState()!=Player.STATE_ENDED) handler.postDelayed(this,1000);
             }
         };
 
@@ -156,6 +206,10 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.O
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if(fromUser)
         {
+            if(!handler.hasCallbacks(seek_runnable))
+            {
+                handler.post(seek_runnable);
+            }
             player.seekTo(progress*1000);
         }
     }
@@ -170,16 +224,6 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener, View.O
         if(!player.isPlaying()) player.play();
     }
 
-    @Override
-    public void onClick(View v) {
-        final int i = R.id.play;
-
-        switch (v.getId())
-        {
-            case R.id.forward:
-                break;
-        }
-    }
 }
 
 
@@ -224,13 +268,19 @@ class DataRetriever
 
         return song;
     }
+
+    public String[] getTitles()
+    {
+        List<Song> songs = fetch();
+        return songs.stream().map(Song::getTitle).toArray(String[]::new);
+    }
 }
 
 
 
 class Song
 {
-    String yt_url,stream_url,thumbnail_url,title,error,publishedTime,channel,viewCount;
+    String yt_url,stream_url,thumbnail_url,title,error,publishedTime,channel,viewCount,duration_str;
     float duration;
 
     Song()
@@ -246,12 +296,21 @@ class Song
 
         title = videoData.getOrDefault(PyObject.fromJava("title"),null).toJava(String.class);
         yt_url = videoData.getOrDefault(PyObject.fromJava("url"),null).toJava(String.class);
-        publishedTime = videoData.getOrDefault(PyObject.fromJava("publishedTime"),null).toJava(String.class);
         viewCount = videoData.getOrDefault(PyObject.fromJava("viewCount"),null).toJava(String.class);
         thumbnail_url = videoData.getOrDefault(PyObject.fromJava("thumbnail"),null).toJava(String.class);
         channel = videoData.getOrDefault(PyObject.fromJava("channel"),null).toJava(String.class);
 
-        duration = durationConvert(videoData.getOrDefault(PyObject.fromJava("duration"),null).toJava(String.class));
+        try
+        {
+            publishedTime = videoData.getOrDefault(PyObject.fromJava("publishedTime"),null).toJava(String.class);
+        }
+        catch (NullPointerException e)
+        {
+            publishedTime = null;
+        }
+
+        duration_str = videoData.getOrDefault(PyObject.fromJava("duration"),null).toJava(String.class);
+        duration = durationConvert(duration_str);
     }
 
     public Song(String yt_url, String stream_url, String thumbnail_url, String title, String error, String publishedTime, String channel, String viewCount, float duration) {
@@ -264,6 +323,14 @@ class Song
         this.channel = channel;
         this.viewCount = viewCount;
         this.duration = duration;
+    }
+
+    public String getDuration_str() {
+        return duration_str;
+    }
+
+    public void setDuration_str(String duration_str) {
+        this.duration_str = duration_str;
     }
 
     public float durationConvert(String str)
