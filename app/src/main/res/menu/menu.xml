@@ -6,6 +6,6 @@
         android:id="@+id/search"
         android:icon="@drawable/search"
         app:showAsAction="always"
-        app:actionViewClass="android.widget.AutoCompleteTextView"/>
+        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
 
 </menu>

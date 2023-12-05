@@ -281,7 +281,7 @@ class DataRetriever
 class Song
 {
     String yt_url,stream_url,thumbnail_url,title,error,publishedTime,channel,viewCount,duration_str;
-    float duration;
+    float duration = 1;
 
     Song()
     {
@@ -296,7 +296,6 @@ class Song
 
         title = videoData.getOrDefault(PyObject.fromJava("title"),null).toJava(String.class);
         yt_url = videoData.getOrDefault(PyObject.fromJava("url"),null).toJava(String.class);
-        viewCount = videoData.getOrDefault(PyObject.fromJava("viewCount"),null).toJava(String.class);
         thumbnail_url = videoData.getOrDefault(PyObject.fromJava("thumbnail"),null).toJava(String.class);
         channel = videoData.getOrDefault(PyObject.fromJava("channel"),null).toJava(String.class);
 
@@ -309,8 +308,25 @@ class Song
             publishedTime = null;
         }
 
-        duration_str = videoData.getOrDefault(PyObject.fromJava("duration"),null).toJava(String.class);
-        duration = durationConvert(duration_str);
+        try {
+            viewCount = videoData.getOrDefault(PyObject.fromJava("viewCount"),null).toJava(String.class);
+        }
+        catch (NullPointerException e)
+        {
+            viewCount = null;
+        }
+
+        try {
+            duration_str = videoData.getOrDefault(PyObject.fromJava("duration"),null).toJava(String.class);
+            duration = durationConvert(duration_str);
+        }
+
+        catch (NullPointerException e)
+        {
+            duration_str = null;
+            duration = 1;
+        }
+
     }
 
     public Song(String yt_url, String stream_url, String thumbnail_url, String title, String error, String publishedTime, String channel, String viewCount, float duration) {

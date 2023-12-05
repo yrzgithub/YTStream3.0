@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.SeekBar;
@@ -65,6 +66,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
 
         if(search==null) return false;
+
+   /*     AutoCompleteTextView auto = (AutoCompleteTextView) search.getRootView();
+        Log.e("uruttu_e",String.valueOf(auto)); */
+
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -84,13 +89,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                DataRetriever retriever = new DataRetriever(newText);
+
+              /*  DataRetriever retriever = new DataRetriever(newText);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-
+                        String[] titles = retriever.getTitles();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                auto.setAdapter(new ArrayAdapter<>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,titles));
+                            }
+                        });
                     }
-                }).start();
+                }).start(); */
+
                 return false;
             }
         });
