@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pause_or_play = findViewById(R.id.play);
         bar = findViewById(R.id.seek);
 
-        load_gif(this,thumbnail,R.drawable.yt);
+        load_gif(thumbnail,R.drawable.yt);
     }
 
     @Override
@@ -56,8 +56,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if(!query.isEmpty()) {
 
+                    search.onActionViewCollapsed();
+
+                    load_gif(thumbnail,R.drawable.loading);
+
                     PlaySong play = new PlaySong(MainActivity.this,query);
                     play.start();
+
+                    new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    };
+
+                    Handler h = new Handler();
+
                 }
 
                 return false;
@@ -88,9 +102,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public static void load_gif(Context c, ImageView v,int id)
+    public static void load_gif(ImageView v,int id)
     {
-        Glide.with(c).load(id).into(v);
+        Glide.with(v).load(id).into(v);
+    }
+
+    public static void load_gif(ImageView v,String url)
+    {
+        Glide.with(v).load(url).into(v);
     }
 
 }

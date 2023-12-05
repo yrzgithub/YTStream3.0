@@ -7,10 +7,12 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.google.android.exoplayer2.BasePlayer;
@@ -36,11 +38,16 @@ class PlaySong extends Thread
     String query;
     Activity act;
     ExoPlayer player;
+    ImageView thumbnail;
 
     PlaySong(Activity activity,String query)
     {
         this.query = query;
         this.act = activity;
+
+        // UI
+
+        this.thumbnail = activity.findViewById(R.id.thumb);
 
         player = new ExoPlayer.Builder(activity).build();
     }
@@ -53,13 +60,21 @@ class PlaySong extends Thread
         retriever.fetch();
         Song song = retriever.get();
 
+        String stream_url = song.getStream_url();
+        String thumbnail_url = song.getThumbnail_url();
+
         act.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                MediaItem item = MediaItem.fromUri(song.getStream_url());
+
+                MainActivity.load_gif(thumbnail,thumbnail_url);
+
+                MediaItem item = MediaItem.fromUri(stream_url);
                 player.setMediaItem(item);
                 player.prepare();
                 player.play();
+
+                Glide.with(thumbnail).load(Uri.parse(thumbnail_url)).into(thumbnail);
             }
         });
     }
