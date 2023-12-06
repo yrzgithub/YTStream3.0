@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         auto.setDropDownBackgroundResource(R.color.white);
         auto.setThreshold(1);
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,new String[0]);
+        auto.setAdapter(adapter);
+
         auto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -129,8 +132,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,titles);
-                                    auto.setAdapter(adapter);
+                                    adapter.clear();
+                                    adapter.addAll(titles);
                                     //if(!auto.isPopupShowing()) auto.showDropDown();
                                 }
                             });
