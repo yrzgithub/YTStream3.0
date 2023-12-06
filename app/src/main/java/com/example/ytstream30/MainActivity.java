@@ -7,6 +7,7 @@ import androidx.cursoradapter.widget.SimpleCursorAdapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
@@ -27,6 +29,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView title;
     ImageView thumbnail,backward,forward,pause_or_play;
     SeekBar bar;
+    PlaySong player;
 
 
     @Override
@@ -65,10 +69,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
 
-        if(search==null) return false;
+        AutoCompleteTextView auto = (AutoCompleteTextView) search.findViewById(androidx.appcompat.R.id.search_src_text);
+        auto.setHint("Search YouTube");
+        auto.setDropDownBackgroundResource(R.color.white);
+        auto.setThreshold(1);
+        auto.showDropDown();
 
-   /*     AutoCompleteTextView auto = (AutoCompleteTextView) search.getRootView();
-        Log.e("uruttu_e",String.valueOf(auto)); */
+        auto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String title = (String) parent.getItemAtPosition(position);
+                auto.setText(title);
+            }
+        });
 
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -80,8 +93,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     load_gif(thumbnail,R.drawable.loading);
 
-                    PlaySong play = new PlaySong(MainActivity.this,query);
-                    play.start();
+                    if(player!=null)
+                    {
+                        player.destroyPlayer();
+                    }
+
+                    player = new PlaySong(MainActivity.this,query);
+                    player.start();
                 }
 
                 return false;
@@ -90,19 +108,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public boolean onQueryTextChange(String newText) {
 
-              /*  DataRetriever retriever = new DataRetriever(newText);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        String[] titles = retriever.getTitles();
-                        runOnUiThread(new Runnable() {
+
+                        DataRetriever retriever = new DataRetriever(newText);
+
+                        String[] titles = retriever.fetch();
+
+                        Log.e("uruttu_titles", Arrays.toString(titles));
+
+                        auto.post(new Runnable() {
                             @Override
                             public void run() {
                                 auto.setAdapter(new ArrayAdapter<>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,titles));
                             }
                         });
                     }
-                }).start(); */
+                }).start();
 
                 return false;
             }
@@ -137,4 +160,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Glide.with(v).load(url).into(v);
     }
 
+    @Override
+    protected void onDestroy() {
+        player.destroyPlayer();
+        super.onDestroy();
+    }
 }

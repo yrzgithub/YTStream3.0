@@ -174,6 +174,8 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
 
     public void destroyPlayer()
     {
+        player.seekTo(0);
+        handler.removeCallbacks(seek_runnable);
         player.pause();
         player.stop();
         player.release();
@@ -242,19 +244,19 @@ class DataRetriever
 
     public List<Song> fetch()
     {
-        Log.e("uruttu_media_state","Fetching..");
+       // Log.e("uruttu_media_state","Fetching..");
 
         List<Song> songs = main.callAttr("get_url_data",query).asList().stream().map(Song::new).collect(Collectors.toList());;
         this.songs.addAll(songs);
 
-        Log.e("uruttu_media_state","Fetched..");
+       // Log.e("uruttu_media_state","Fetched..");
 
         return this.songs;
     }
 
     public Song get()
     {
-        Log.e("uruttu_media_state","Fetching Stream url..");
+      //  Log.e("uruttu_media_state","Fetching Stream url..");
 
         Song song = null;
 
@@ -264,7 +266,7 @@ class DataRetriever
             song.setStream_url(stream_url);
         }
 
-        Log.e("uruttu_media_state","Stream url Fetched..");
+       // Log.e("uruttu_media_state","Stream url Fetched..");
 
         return song;
     }
@@ -290,7 +292,7 @@ class Song
 
     Song(PyObject videoMap)
     {
-        Log.e("uruttu_video_data",videoMap.toString());
+       // Log.e("uruttu_video_data",videoMap.toString());
 
         Map<PyObject,PyObject> videoData = videoMap.asMap();
 
@@ -359,7 +361,7 @@ class Song
         for(int index=0;index<duration_string_length;++index)
         {
             duration += Math.pow(60,duration_string_length-index-1) * Float.parseFloat(duration_string[index]);
-            Log.e("uruttu__duration", String.valueOf(Math.pow(60,index)));
+            //Log.e("uruttu__duration", String.valueOf(Math.pow(60,index)));
         }
 
         return duration;
