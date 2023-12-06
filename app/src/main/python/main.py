@@ -8,7 +8,7 @@ def get_url_data(prompt) -> dict:
    # videos = VideosSearch(prompt,region="IN")
 
     try:
-        videos = VideosSearch(prompt,region="IN")
+        videos = VideosSearch(prompt)
 
     except Exception as e:
         return {"error":str(e)}

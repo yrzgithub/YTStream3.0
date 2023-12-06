@@ -75,10 +75,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         auto.setHint("Search YouTube");
         auto.setDropDownBackgroundResource(R.color.white);
         auto.setThreshold(1);
-        auto.showDropDown();
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,new String[0]);
-        auto.setAdapter(adapter);
 
         auto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -97,7 +93,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 if(!query.isEmpty()) {
 
+                    search.clearFocus();
                     search.onActionViewCollapsed();
+                    auto.dismissDropDown();
 
                     load_gif(thumbnail,R.drawable.loading);
 
@@ -126,13 +124,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         Log.e("uruttu_titles", Arrays.toString(titles));
 
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.clear();
-                                adapter.addAll(titles);
-                            }
-                        });
+                        if(titles.length>0)
+                        {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,titles);
+                                    auto.setAdapter(adapter);
+                                    //if(!auto.isPopupShowing()) auto.showDropDown();
+                                }
+                            });
+                        }
                     }
                 });
 
