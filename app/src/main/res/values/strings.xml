@@ -5,4 +5,7 @@
     <string name="thumb">thumbnail</string>
     <string name="search">search</string>
     <string name="hello_cutie">Hello Cutie!</string>
+    <string name="uploader">NA</string>
+    <string name="views">NA</string>
+    <string name="time">NA</string>
 </resources>

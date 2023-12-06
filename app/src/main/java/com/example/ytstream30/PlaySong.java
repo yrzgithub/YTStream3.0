@@ -7,6 +7,8 @@ import android.database.DataSetObserver;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -33,6 +35,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,13 +102,29 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
         });
     }
 
+    PlaySong(Activity act,Song song)
+    {
+        this(act,(String) null);
+        this.song = song;
+    }
+
     @Override
     public void run() {
         super.run();
 
-        retriever = new DataRetriever(this.query);
-        retriever.fetch();
-        song = retriever.get();
+        if(query!=null)
+        {
+            retriever = new DataRetriever(this.query);
+            retriever.fetch();
+            song = retriever.get();
+        }
+        else
+        {
+            retriever = new DataRetriever();
+            String stream_rl = retriever.getStreamUrl(song);
+            song.setStream_url(stream_rl);
+        }
+
 
         handler.post(new Runnable() {
             @Override
@@ -231,7 +250,6 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
     public void onStopTrackingTouch(SeekBar seekBar) {
         if(!player.isPlaying()) player.play();
     }
-
 }
 
 
@@ -246,6 +264,11 @@ class DataRetriever
     {
         songs = new ArrayList<>();
         this.query = query;
+    }
+
+    DataRetriever()
+    {
+
     }
 
     public List<Song> fetch()
@@ -277,6 +300,11 @@ class DataRetriever
         return song;
     }
 
+    public String getStreamUrl(Song song)
+    {
+        return main.callAttr("get_stream_url",song.getYt_url()).toString();
+    }
+
     public List<String> getTitlesList()
     {
         List<Song> songs = fetch();
@@ -292,9 +320,9 @@ class DataRetriever
 
 
 
-class Song
+class Song implements Serializable
 {
-    String yt_url,stream_url,thumbnail_url,title,error,publishedTime,channel,viewCount,duration_str;
+    String yt_url,stream_url,thumbnail_url,title,error,publishedTime,channel,viewCount,duration_str,channel_url;
     float duration = 1;
 
     Song()
@@ -312,6 +340,8 @@ class Song
         yt_url = videoData.getOrDefault(PyObject.fromJava("url"),null).toJava(String.class);
         thumbnail_url = videoData.getOrDefault(PyObject.fromJava("thumbnail"),null).toJava(String.class);
         channel = videoData.getOrDefault(PyObject.fromJava("channel"),null).toJava(String.class);
+        channel_url = videoData.getOrDefault(PyObject.fromJava("channel_url"),null).toJava(String.class);
+
 
         try
         {
@@ -353,6 +383,14 @@ class Song
         this.channel = channel;
         this.viewCount = viewCount;
         this.duration = duration;
+    }
+
+    public String getChannel_url() {
+        return channel_url;
+    }
+
+    public void setChannel_url(String channel_url) {
+        this.channel_url = channel_url;
     }
 
     public String getDuration_str() {

@@ -1,14 +1,17 @@
 package com.example.ytstream30;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.cursoradapter.widget.SimpleCursorAdapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     PlaySong player;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +66,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        load_gif(thumbnail,R.drawable.yt);
+        Intent intent = getIntent();
+
+        if(intent.hasExtra("song"))
+        {
+            Song song = intent.getSerializableExtra("song",Song.class);
+
+            if(player!=null)
+            {
+                player.destroyPlayer();
+            }
+
+            player = new PlaySong(MainActivity.this,song);
+            player.start();
+        }
+        else
+        {
+            load_gif(thumbnail,R.drawable.yt);
+        }
     }
 
     @Override
@@ -97,15 +118,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     search.onActionViewCollapsed();
                     auto.dismissDropDown();
 
-                    load_gif(thumbnail,R.drawable.loading);
+                  //  load_gif(thumbnail,R.drawable.loading);
 
-                    if(player!=null)
+                  /*  if(player!=null)
                     {
                         player.destroyPlayer();
                     }
 
                     player = new PlaySong(MainActivity.this,query);
-                    player.start();
+                    player.start(); */
+
+                  //  Glide.with(thumbnail).load(R.drawable.yt).into(thumbnail);
+
+                    Intent intent = new Intent(MainActivity.this,SearchResultsAct.class);
+                    intent.putExtra("query",query);
+                    startActivity(intent);
                 }
 
                 return false;

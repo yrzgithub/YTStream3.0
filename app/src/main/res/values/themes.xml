@@ -10,7 +10,4 @@
 
     <style name="Theme.YTStream30" parent="Base.Theme.YTStream30" />
 
-    <color name="my_light_primary">#FD18D8</color>
-    <color name="my_dark_primary">#FF00FB</color>
-
 </resources>
