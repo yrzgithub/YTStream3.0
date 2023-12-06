@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AutoCompleteTextView auto = (AutoCompleteTextView) search.findViewById(androidx.appcompat.R.id.search_src_text);
         auto.setHint("Search YouTube");
         auto.setDropDownBackgroundResource(R.color.white);
-        auto.setThreshold(1);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,new String[0]);
         auto.setAdapter(adapter);
@@ -88,8 +87,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            final Handler handler = new Handler(Looper.getMainLooper());
 
             @Override
             public boolean onQueryTextSubmit(String query) {
