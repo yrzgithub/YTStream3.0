@@ -75,6 +75,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         auto.setThreshold(1);
         auto.showDropDown();
 
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,new String[0]);
+        auto.setAdapter(adapter);
+
         auto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -114,14 +117,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         DataRetriever retriever = new DataRetriever(newText);
 
-                        String[] titles = retriever.fetch();
+                        String[] titles = retriever.getTitles();
 
                         Log.e("uruttu_titles", Arrays.toString(titles));
 
-                        auto.post(new Runnable() {
+                        runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                auto.setAdapter(new ArrayAdapter<>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,titles));
+                                if(titles.length>0)
+                                {
+                                    adapter.clear();
+                                    adapter.addAll(titles);
+                                }
                             }
                         });
                     }

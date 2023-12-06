@@ -271,6 +271,12 @@ class DataRetriever
         return song;
     }
 
+    public List<String> getTitlesList()
+    {
+        List<Song> songs = fetch();
+        return songs.stream().map(Song::getTitle).collect(Collectors.toList());
+    }
+
     public String[] getTitles()
     {
         List<Song> songs = fetch();
