@@ -64,7 +64,7 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
 
         // UI
 
-        this.thumbnail = activity.findViewById(R.id.thumb);
+        thumbnail = activity.findViewById(R.id.thumb);
         title = act.findViewById(R.id.title);
         seek = activity.findViewById(R.id.seek);
         start = activity.findViewById(R.id.start);
@@ -107,7 +107,7 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
         retriever.fetch();
         song = retriever.get();
 
-        act.runOnUiThread(new Runnable() {
+        handler.post(new Runnable() {
             @Override
             public void run() {
                 updateUI(song);

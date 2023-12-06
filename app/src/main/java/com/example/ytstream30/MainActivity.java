@@ -31,6 +31,8 @@ import com.google.android.exoplayer2.MediaItem;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -87,6 +89,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            final Handler handler = new Handler(Looper.getMainLooper());
+
             @Override
             public boolean onQueryTextSubmit(String query) {
 
@@ -111,28 +116,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                new Thread(new Runnable() {
+                Executor thread = Executors.newSingleThreadExecutor();
+                thread.execute(new Runnable() {
                     @Override
                     public void run() {
-
                         DataRetriever retriever = new DataRetriever(newText);
 
                         String[] titles = retriever.getTitles();
 
                         Log.e("uruttu_titles", Arrays.toString(titles));
 
-                        runOnUiThread(new Runnable() {
+                        handler.post(new Runnable() {
                             @Override
                             public void run() {
-                                if(titles.length>0)
-                                {
-                                    adapter.clear();
-                                    adapter.addAll(titles);
-                                }
+                                adapter.clear();
+                                adapter.addAll(titles);
                             }
                         });
                     }
-                }).start();
+                });
 
                 return false;
             }
