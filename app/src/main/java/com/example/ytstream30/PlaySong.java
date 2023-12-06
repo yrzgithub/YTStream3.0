@@ -117,6 +117,12 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
 
     @Override
     public void onPlaybackStateChanged(int playbackState) {
+        switch (playbackState)
+        {
+            case Player.STATE_BUFFERING:
+                Glide.with(pause_or_play).load(R.drawable.loading_pink_list).into(pause_or_play);
+                break;
+        }
         Player.Listener.super.onPlaybackStateChanged(playbackState);
     }
 
