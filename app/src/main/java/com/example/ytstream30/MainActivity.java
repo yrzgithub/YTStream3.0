@@ -70,12 +70,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(intent.hasExtra("song"))
         {
-            Song song = intent.getSerializableExtra("song",Song.class);
+            Glide.with(thumbnail).load(R.drawable.loading).into(thumbnail);
 
-            if(player!=null)
-            {
-                player.destroyPlayer();
-            }
+            Song song = intent.getSerializableExtra("song",Song.class);
 
             player = new PlaySong(MainActivity.this,song);
             player.start();
@@ -118,6 +115,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     search.onActionViewCollapsed();
                     auto.dismissDropDown();
 
+                    Intent intent = new Intent(MainActivity.this,SearchResultsAct.class);
+                    intent.putExtra("query",query);
+
+                    if(player!=null)
+                    {
+                        player.destroyPlayer();
+                       // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    }
+
                   //  load_gif(thumbnail,R.drawable.loading);
 
                   /*  if(player!=null)
@@ -130,8 +136,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                   //  Glide.with(thumbnail).load(R.drawable.yt).into(thumbnail);
 
-                    Intent intent = new Intent(MainActivity.this,SearchResultsAct.class);
-                    intent.putExtra("query",query);
                     startActivity(intent);
                 }
 
