@@ -41,6 +41,7 @@ public class SearchResultsAct extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 retrieve(query);
+                swipe.setRefreshing(false);
             }
         });
     }

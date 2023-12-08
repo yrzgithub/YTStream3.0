@@ -286,7 +286,7 @@ class DataRetriever
 
         float end = System.currentTimeMillis();
 
-        Log.e("uruttu_fetch_time_fetch",String.valueOf((end-start)));
+        Log.e("uruttu_fetch_time_fetch",end + " " + start);
 
         return this.songs;
     }
@@ -300,7 +300,7 @@ class DataRetriever
 
         if(songs.size()>0) {
             song = this.songs.get(0);
-            String stream_url = main.callAttr("get_stream_url",song.getYt_url()).toString();
+            String stream_url = getStreamUrl(song);
             song.setStream_url(stream_url);
         }
 
@@ -313,7 +313,19 @@ class DataRetriever
 
     public String getStreamUrl(Song song)
     {
-        return main.callAttr("get_stream_url",song.getYt_url()).toString();
+        String stream_url = null;
+
+        float start = System.currentTimeMillis();
+
+        stream_url =  main.callAttr("get_stream_url",song.getYt_url()).toString();
+
+        float end = System.currentTimeMillis();
+
+        // Log.e("uruttu_fetch_stream_url",String.valueOf(end-start));
+
+        Log.e("uruttu_fetch_time_fetch",end + " " + start);
+
+        return stream_url;
     }
 
     public List<String> getTitlesList()
