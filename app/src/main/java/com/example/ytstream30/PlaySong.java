@@ -58,6 +58,7 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
     ImageButton backward,forward,pause_or_play;
     DataRetriever retriever;
     Song song;
+    List<Song> songs = new ArrayList<>();
     Handler handler = new Handler();
 
     PlaySong(Activity activity,String query)
@@ -274,12 +275,18 @@ class DataRetriever
     {
         float start = System.currentTimeMillis();
 
-        List<Song> songs = main.callAttr("get_url_data",query).asList().stream().map(Song::new).collect(Collectors.toList());;
-        this.songs.addAll(songs);
+        try
+        {
+            songs.addAll(main.callAttr("get_url_data",query).asList().stream().map(Song::new).collect(Collectors.toList()));
+        }
+        catch(Error | Exception e)
+        {
+            Log.e("uruttu_playsong_fetch",e.getMessage());
+        }
 
         float end = System.currentTimeMillis();
 
-        Log.e("uruttu_fetch_time_fetch",String.valueOf((end-start)/1000));
+        Log.e("uruttu_fetch_time_fetch",String.valueOf((end-start)));
 
         return this.songs;
     }
