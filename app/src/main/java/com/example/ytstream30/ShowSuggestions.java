@@ -16,6 +16,7 @@ import androidx.appcompat.widget.SearchView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 import java.util.concurrent.Executor;
 
 public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
@@ -23,6 +24,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
     SearchView search;
     AutoCompleteTextView auto;
     Activity act;
+    Stack<Thread> threads;
 
     ShowSuggestions(Activity act, Menu menu) {
         search = (SearchView) menu.findItem(R.id.search).getActionView();
