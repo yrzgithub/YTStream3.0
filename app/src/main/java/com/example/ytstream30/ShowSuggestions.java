@@ -2,8 +2,6 @@ package com.example.ytstream30;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -13,17 +11,14 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.appcompat.widget.SearchView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Stack;
-import java.util.concurrent.Executor;
 
 public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
 
     SearchView search;
     AutoCompleteTextView auto;
     Activity act;
+    PlaySong player;
 
     ShowSuggestions(Activity act, Menu menu) {
         search = (SearchView) menu.findItem(R.id.search).getActionView();
@@ -36,6 +31,11 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
         auto.setThreshold(1);
     }
 
+    public void setPlayer(PlaySong player)
+    {
+        this.player = player;
+    }
+
     @Override
     public boolean onQueryTextSubmit(String query) {
 
@@ -43,9 +43,12 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
         search.onActionViewCollapsed();
         auto.dismissDropDown();
 
+        if(this.player!=null) this.player.destroyPlayer();
+
         Intent intent = new Intent(this.act, SearchResultsAct.class);
-        intent.putExtra(SearchResultsAct.search_query, query);
+        intent.putExtra(SearchResultsAct.SEARCH_QUERY, query);
         act.startActivity(intent);
+        act.finish();
 
         return false;
     }
@@ -67,6 +70,8 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
                 {
                     return;
                 }
+
+                if(act.isDestroyed()) return;
 
                 act.runOnUiThread(new Runnable() {
                     @Override

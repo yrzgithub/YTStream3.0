@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +26,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageView thumbnail,backward,forward,pause_or_play;
     SeekBar bar;
     PlaySong player;
-    final static String song_serializable = "song";
+    final static String SONG = "song";
+    final static String RESTORE = "restore";
 
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -51,11 +53,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Intent intent = getIntent();
 
-        if(intent.hasExtra("song"))
+        if(intent.hasExtra(SONG))
         {
             Glide.with(thumbnail).load(R.drawable.loading).into(thumbnail);
 
-            Song song = intent.getSerializableExtra(MainActivity.song_serializable,Song.class);
+            Song song = intent.getSerializableExtra(MainActivity.SONG,Song.class);
 
             player = new PlaySong(MainActivity.this,song);
             player.start();
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getMenuInflater().inflate(R.menu.main_act_menu,menu);
 
         ShowSuggestions suggestions = new ShowSuggestions(this,menu);
+        suggestions.setPlayer(player);
 
         SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
         AutoCompleteTextView auto = (AutoCompleteTextView) search.findViewById(androidx.appcompat.R.id.search_src_text);
@@ -103,12 +106,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public static void load_gif(ImageView v,String url)
     {
-        Glide.with(v).load(url).into(v);
+        if(v.getContext()!=null) Glide.with(v).load(url).into(v);
     }
 
     @Override
     protected void onDestroy() {
-        // player.destroyPlayer();
         super.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        outState = new Bundle();
+        outState.putSerializable(RESTORE,player);
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+
+        PlaySong player = (PlaySong) savedInstanceState.getSerializable(RESTORE);
+        if(player!=null)  player.updateUI();
+
+        super.onRestoreInstanceState(savedInstanceState);
     }
 }

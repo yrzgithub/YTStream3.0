@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -26,7 +25,7 @@ public class SearchResultsAct extends AppCompatActivity {
 
     ListView list;
     ImageView loading;
-    final static String search_query = "query";
+    final static String SEARCH_QUERY = "query";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +39,11 @@ public class SearchResultsAct extends AppCompatActivity {
         Glide.with(loading).load(R.drawable.loading_pink_list).into(loading);
 
         Intent intent = getIntent();
-        String query = intent.getStringExtra(search_query);
+        String query = intent.getStringExtra(SEARCH_QUERY);
 
         retrieve(query);
 
-       swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 retrieve(query);

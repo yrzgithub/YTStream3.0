@@ -55,8 +55,9 @@ public class SongsListAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(act,MainActivity.class);
-                    intent.putExtra("song",songs.get(position));
+                    intent.putExtra(MainActivity.SONG,songs.get(position));
                     act.startActivity(intent);
+                    act.finish();
                 }
             });
 

@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 
 
 
-class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.Listener
+class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.Listener,Serializable
 {
 
     String query;
@@ -146,7 +146,7 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
         handler.post(new Runnable() {
             @Override
             public void run() {
-                updateUI(song);
+                updateUI();
             }
         });
     }
@@ -155,9 +155,7 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
     public void onPlaybackStateChanged(int playbackState) {
         switch (playbackState)
         {
-            case Player.STATE_BUFFERING:
-                Glide.with(pause_or_play).load(R.drawable.loading_pink_list).into(pause_or_play);
-                break;
+
         }
         Player.Listener.super.onPlaybackStateChanged(playbackState);
     }
@@ -186,7 +184,7 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
         }
     }
 
-    public void updateUI(Song song)
+    public void updateUI()
     {
         seek.setMax((int) song.getDuration());
 
