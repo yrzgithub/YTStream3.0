@@ -24,7 +24,6 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
     SearchView search;
     AutoCompleteTextView auto;
     Activity act;
-    Stack<Thread> threads;
 
     ShowSuggestions(Activity act, Menu menu) {
         search = (SearchView) menu.findItem(R.id.search).getActionView();
