@@ -85,5 +85,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String title = (String) parent.getItemAtPosition(position);
         auto.setText(title);
+
+        onQueryTextSubmit(title);
     }
 }

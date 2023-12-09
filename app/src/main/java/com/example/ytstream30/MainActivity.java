@@ -88,8 +88,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
 
-        // start
-
         ShowSuggestions suggestions = new ShowSuggestions(this,menu);
 
         SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
@@ -97,95 +95,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         search.setOnQueryTextListener((SearchView.OnQueryTextListener) suggestions);
         auto.setOnItemClickListener(suggestions);
-
-        // end
-
-
-    /*    auto.setHint("Search YouTube");
-        auto.setDropDownBackgroundResource(R.color.white);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,new String[0]);
-        auto.setAdapter(adapter);
-
-        auto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String title = (String) parent.getItemAtPosition(position);
-                auto.setText(title);
-            }
-        });
-
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-                if(!query.isEmpty()) {
-
-                    search.clearFocus();
-                    search.onActionViewCollapsed();
-                    auto.dismissDropDown();
-
-                    Intent intent = new Intent(MainActivity.this,SearchResultsAct.class);
-                    intent.putExtra("query",query);
-
-                    if(player!=null)
-                    {
-                        player.destroyPlayer();
-                       // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    }
-
-                  //  load_gif(thumbnail,R.drawable.loading);
-
-                 if(player!=null)
-                    {
-                        player.destroyPlayer();
-                    }
-
-                    player = new PlaySong(MainActivity.this,query);
-                    player.start();
-
-                  //  Glide.with(thumbnail).load(R.drawable.yt).into(thumbnail);
-
-                    startActivity(intent);
-                }
-
-                return false;
-            } */
-
-        /*
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-
-                Executor thread = Executors.newSingleThreadExecutor();
-                thread.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        DataRetriever retriever = new DataRetriever(newText);
-
-                        String[] titles = retriever.getTitles();
-
-                        Log.e("uruttu_titles", Arrays.toString(titles));
-
-                        if(titles.length>0)
-                        {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    adapter.clear();
-                                    adapter.addAll(titles);
-                                    //if(!auto.isPopupShowing()) auto.showDropDown();
-                                }
-                            });
-                        }
-                    }
-                });
-
-                return false;
-            }
-        }); */
-
 
         return super.onCreateOptionsMenu(menu);
     }
