@@ -1,12 +1,18 @@
 package com.example.ytstream30;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -70,5 +76,25 @@ public class SearchResultsAct extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_act_menu,menu);
+
+        ShowSuggestions suggestions  = new ShowSuggestions(this,menu);
+
+        SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
+        AutoCompleteTextView auto = search.findViewById(androidx.appcompat.R.id.search_src_text);
+
+        auto.setOnItemClickListener(suggestions);
+        search.setOnQueryTextListener(suggestions);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 }

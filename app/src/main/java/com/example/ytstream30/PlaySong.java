@@ -61,12 +61,9 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
     List<Song> songs = new ArrayList<>();
     Handler handler = new Handler();
 
-    PlaySong(Activity activity,String query)
+    PlaySong(Activity activity)
     {
-        this.query = query;
         this.act = activity;
-
-        // UI
 
         thumbnail = activity.findViewById(R.id.thumb);
         title = act.findViewById(R.id.title);
@@ -103,10 +100,30 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
         });
     }
 
+    PlaySong(Activity activity,String query)
+    {
+        this(activity);
+        this.query = query;
+    }
+
     PlaySong(Activity act,Song song)
     {
-        this(act,(String) null);
+        this(act);
         this.song = song;
+    }
+
+    public void setNext(String query)
+    {
+        this.query = query;
+        this.song = null;
+        player.stop();
+    }
+
+    public void setNext(Song song)
+    {
+        this.song = song;
+        this.query = null;
+        player.stop();
     }
 
     @Override
