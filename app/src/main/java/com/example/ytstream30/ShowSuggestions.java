@@ -19,6 +19,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
     AutoCompleteTextView auto;
     Activity act;
     PlaySong player;
+    SearchAdapter adapter;
 
     ShowSuggestions(Activity act, Menu menu) {
         search = (SearchView) menu.findItem(R.id.search).getActionView();
@@ -26,9 +27,12 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
 
         this.act = act;
 
+        adapter = new SearchAdapter(act);
+
         auto.setHint("Search YouTube");
         auto.setDropDownBackgroundResource(R.color.white);
         auto.setThreshold(1);
+        auto.setAdapter(adapter);
     }
 
     public void setPlayer(PlaySong player)
@@ -58,6 +62,8 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
 
         if (newText.isEmpty()) return false;
 
+        Log.e("uruttu_titles","Fetching titles");
+
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -76,14 +82,13 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
                 act.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        auto.setAdapter(new ArrayAdapter<String>(act,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,titles));
-                        if(!auto.isPopupShowing()) auto.showDropDown();
+                        adapter.addAll(titles);
                     }
                 });
             }
         }).start();
 
-        return false;
+        return true;
     }
 
     @Override
