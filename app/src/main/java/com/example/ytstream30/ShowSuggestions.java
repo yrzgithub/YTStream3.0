@@ -13,49 +13,26 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.appcompat.widget.SearchView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executor;
 
-public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener,Runnable {
+public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
 
     SearchView search;
     AutoCompleteTextView auto;
-    ArrayAdapter<String> adapter;
-    Thread thread;
-    DataRetriever retriever;
     Activity act;
-    String[] titles;
-    Handler handler = new Handler(Looper.getMainLooper());
 
-    ShowSuggestions(Activity act, Menu menu)
-    {
+    ShowSuggestions(Activity act, Menu menu) {
         search = (SearchView) menu.findItem(R.id.search).getActionView();
-        auto  = search.findViewById(androidx.appcompat.R.id.search_src_text);
+        auto = search.findViewById(androidx.appcompat.R.id.search_src_text);
 
         this.act = act;
 
         auto.setHint("Search YouTube");
         auto.setDropDownBackgroundResource(R.color.white);
-
-        adapter = new ArrayAdapter<>(act, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,new String[0]);
-    }
-
-    public void updateAdapter(String query)
-    {
-        if(!query.isEmpty())
-        {
-            thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    retriever = new DataRetriever(query);
-
-                    titles = retriever.getTitles();
-
-                    handler.post(this);
-                }
-            });
-
-            thread.start();
-        }
+        auto.setThreshold(1);
     }
 
     @Override
@@ -65,8 +42,8 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
         search.onActionViewCollapsed();
         auto.dismissDropDown();
 
-        Intent intent = new Intent(this.act,SearchResultsAct.class);
-        intent.putExtra(SearchResultsAct.search_query,query);
+        Intent intent = new Intent(this.act, SearchResultsAct.class);
+        intent.putExtra(SearchResultsAct.search_query, query);
         act.startActivity(intent);
 
         return false;
@@ -74,7 +51,32 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
 
     @Override
     public boolean onQueryTextChange(String newText) {
-      //  updateAdapter(newText);
+
+        if (newText.isEmpty()) return false;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                DataRetriever retriever = new DataRetriever(newText);
+                List<String> titles = retriever.getTitlesList();
+
+                Log.e("uruttu_titles", newText + ":" + titles.toString());
+
+                if(titles.size()==0)
+                {
+                    return;
+                }
+
+                act.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        auto.setAdapter(new ArrayAdapter<String>(act,androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,titles));
+                        if(!auto.isPopupShowing()) auto.showDropDown();
+                    }
+                });
+            }
+        }).start();
+
         return false;
     }
 
@@ -82,17 +84,5 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         String title = (String) parent.getItemAtPosition(position);
         auto.setText(title);
-    }
-
-    @Override
-    public void run() {
-
-        if(titles.length>0)
-        {
-            adapter.clear();
-            adapter.addAll(titles);
-        }
-
-        auto.setAdapter(adapter);
     }
 }
