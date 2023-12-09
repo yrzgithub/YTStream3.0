@@ -2,8 +2,10 @@ package com.example.ytstream30;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -28,7 +30,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     PlaySong player;
     final static String SONG = "song";
     final static String RESTORE = "restore";
-
+    DrawerLayout drawer;
+    ActionBarDrawerToggle toggle;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -42,6 +45,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         forward = findViewById(R.id.forward_btn);
         pause_or_play = findViewById(R.id.play);
         bar = findViewById(R.id.seek);
+        drawer = findViewById(R.id.drawer);
+
+        toggle = new ActionBarDrawerToggle(this,drawer,R.string.open,R.string.close);
+
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        if(getSupportActionBar()!=null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Marquee
         title.post(new Runnable() {
@@ -84,14 +95,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onCreateOptionsMenu(menu);
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId())
-        {
-
-        }
-        return super.onContextItemSelected(item);
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if(toggle.onOptionsItemSelected(item)) return true;
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
