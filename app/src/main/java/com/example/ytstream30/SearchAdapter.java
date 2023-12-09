@@ -1,6 +1,7 @@
 package com.example.ytstream30;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,9 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         {
             suggestion = new TextView(act);
             suggestion.setText(suggestions.get(position));
+            suggestion.setTextSize(18);
+            suggestion.setPadding(0,20,0,20);
+            suggestion.setTextColor(Color.BLACK);
         }
         else
         {
@@ -87,10 +91,10 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         };
     }
 
-    public void addAll(List<String> titles)
+    public synchronized void addAll(List<String> titles)
     {
+        notifyDataSetChanged();
         suggestions.clear();
         suggestions.addAll(titles);
-        if(titles.size()>0) notifyDataSetChanged();
     }
 }

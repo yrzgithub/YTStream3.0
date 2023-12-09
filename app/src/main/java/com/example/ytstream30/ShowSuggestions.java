@@ -67,6 +67,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 DataRetriever retriever = new DataRetriever(newText);
                 List<String> titles = retriever.getTitlesList();
 
