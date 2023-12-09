@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageView thumbnail,backward,forward,pause_or_play;
     SeekBar bar;
     PlaySong player;
+    final static String song_serializable = "song";
 
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             Glide.with(thumbnail).load(R.drawable.loading).into(thumbnail);
 
-            Song song = intent.getSerializableExtra("song",Song.class);
+            Song song = intent.getSerializableExtra(MainActivity.song_serializable,Song.class);
 
             player = new PlaySong(MainActivity.this,song);
             player.start();
@@ -87,10 +88,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
 
-        SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
+        // start
 
+        ShowSuggestions suggestions = new ShowSuggestions(this,menu);
+
+        SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
         AutoCompleteTextView auto = (AutoCompleteTextView) search.findViewById(androidx.appcompat.R.id.search_src_text);
-        auto.setHint("Search YouTube");
+
+        search.setOnQueryTextListener((SearchView.OnQueryTextListener) suggestions);
+        auto.setOnItemClickListener(suggestions);
+
+        // end
+
+
+    /*    auto.setHint("Search YouTube");
         auto.setDropDownBackgroundResource(R.color.white);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,new String[0]);
@@ -126,13 +137,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                   //  load_gif(thumbnail,R.drawable.loading);
 
-                  /*  if(player!=null)
+                 if(player!=null)
                     {
                         player.destroyPlayer();
                     }
 
                     player = new PlaySong(MainActivity.this,query);
-                    player.start(); */
+                    player.start();
 
                   //  Glide.with(thumbnail).load(R.drawable.yt).into(thumbnail);
 
@@ -140,7 +151,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 return false;
-            }
+            } */
+
+        /*
 
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -171,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 return false;
             }
-        });
+        }); */
 
 
         return super.onCreateOptionsMenu(menu);

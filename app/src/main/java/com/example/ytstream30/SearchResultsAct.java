@@ -20,6 +20,7 @@ public class SearchResultsAct extends AppCompatActivity {
 
     ListView list;
     ImageView loading;
+    final static String search_query = "query";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,7 @@ public class SearchResultsAct extends AppCompatActivity {
         Glide.with(loading).load(R.drawable.loading_pink_list).into(loading);
 
         Intent intent = getIntent();
-        String query = intent.getStringExtra("query");
+        String query = intent.getStringExtra(search_query);
 
         retrieve(query);
 

@@ -126,7 +126,6 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
             song.setStream_url(stream_rl);
         }
 
-
         handler.post(new Runnable() {
             @Override
             public void run() {
