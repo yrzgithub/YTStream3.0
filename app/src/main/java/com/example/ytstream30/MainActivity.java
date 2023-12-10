@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView title;
@@ -77,6 +79,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             load_gif(thumbnail,R.drawable.yt);
         }
+
+        // WorkSpace
+
+        new DataStorage(this).createDir();
     }
 
     @Override
