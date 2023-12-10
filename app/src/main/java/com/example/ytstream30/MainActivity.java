@@ -79,10 +79,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             load_gif(thumbnail,R.drawable.yt);
         }
-
-        // WorkSpace
-
-        new DataStorage(this).createDir();
     }
 
     @Override
