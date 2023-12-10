@@ -5,20 +5,20 @@ import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
 public class DataStorage<T> {
 
-    File app_directory;
+    File app_directory, playlist_dir;
 
     DataStorage(Activity activity)
     {
         app_directory = new File(activity.getFilesDir(),"AppData");
-        createDir();
+        playlist_dir = new File(activity.getFilesDir(),"Playlists");
+        createDir(app_directory);
+        createDir(playlist_dir);
     }
 
     public boolean writeObject(String name,T object) {
@@ -65,15 +65,15 @@ public class DataStorage<T> {
         }
     }
 
-    public void createDir() {
+    public void createDir(File dir) {
 
-        if(app_directory.exists())
+        if(dir.exists())
         {
-            Log.e("uruttu_dir", app_directory.getAbsolutePath());
+            Log.e("uruttu_dir", dir.getAbsolutePath());
             return;
         }
 
-        boolean dir_created = app_directory.mkdirs();
+        boolean dir_created = dir.mkdirs();
 
         if(dir_created)
         {
