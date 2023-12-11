@@ -1,7 +1,11 @@
 package com.example.ytstream30;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
+
+import com.google.android.exoplayer2.source.MediaSource;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -22,7 +26,7 @@ public class DataStorage<T> {
     }
 
     public boolean writeObject(String name,T object) {
-        File output_file = new File(app_directory,name);
+        File output_file = new File(playlist_dir,name);
 
         try
         {
@@ -44,7 +48,7 @@ public class DataStorage<T> {
 
     public T readObject(String name)
     {
-        File file = new File(app_directory,name);
+        File file = new File(playlist_dir,name);
 
         try
         {
@@ -63,6 +67,22 @@ public class DataStorage<T> {
             Log.e("uruttu_object",e.getMessage());
             return null;
         }
+    }
+
+    public File getApp_directory() {
+        return app_directory;
+    }
+
+    public void setApp_directory(File app_directory) {
+        this.app_directory = app_directory;
+    }
+
+    public File getPlaylist_dir() {
+        return playlist_dir;
+    }
+
+    public void setPlaylist_dir(File playlist_dir) {
+        this.playlist_dir = playlist_dir;
     }
 
     public void createDir(File dir) {
@@ -84,4 +104,11 @@ public class DataStorage<T> {
             Log.e("uruttu_dir","Dir not Created");
         }
     }
+
+    public boolean delete(String name)
+    {
+        File file = new File(playlist_dir,name);
+        return file.delete();
+    }
+
 }
