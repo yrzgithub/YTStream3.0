@@ -16,8 +16,9 @@ import com.google.android.exoplayer2.upstream.Allocator;
 import com.google.android.exoplayer2.upstream.TransferListener;
 
 import java.io.IOException;
+import java.io.Serializable;
 
-public class MediaSource {
+public class MediaSource implements Serializable {
 
     /*
 

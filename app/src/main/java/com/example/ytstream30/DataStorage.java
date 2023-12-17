@@ -46,10 +46,8 @@ public class DataStorage<T> {
         return true;
     }
 
-    public T readObject(String name)
+    public T readObject(File file)
     {
-        File file = new File(playlist_dir,name);
-
         try
         {
             FileInputStream fileInputStream = new FileInputStream(file);
@@ -67,6 +65,12 @@ public class DataStorage<T> {
             Log.e("uruttu_object",e.getMessage());
             return null;
         }
+    }
+
+    public T readObject(String name)
+    {
+        File file = new File(playlist_dir,name);
+        return readObject(file);
     }
 
     public File getApp_directory() {
@@ -110,5 +114,4 @@ public class DataStorage<T> {
         File file = new File(playlist_dir,name);
         return file.delete();
     }
-
 }

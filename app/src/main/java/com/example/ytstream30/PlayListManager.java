@@ -8,6 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlayListManager {
 
@@ -66,7 +67,21 @@ public class PlayListManager {
     public boolean deleteFromPlaylist(Song song_)
     {
         List<MediaSource> sources = storage.readObject(name);
-        sources.remove(song_);
+        sources.remove(new MediaSource(song_));
         return storage.writeObject(name,sources);
+    }
+
+    public List<List<MediaSource>> getPlaylists()
+    {
+        File file = storage.getPlaylist_dir();
+        File[] playlists = file.listFiles();
+
+        return Arrays.stream(playlists).map(source->storage.readObject(source)).collect(Collectors.toList());
+    }
+
+    public List<String> getPlaylistNames()
+    {
+        File file = storage.getPlaylist_dir();
+        return Arrays.stream(file.list()).collect(Collectors.toList());
     }
 }

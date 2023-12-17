@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -79,6 +80,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         {
             load_gif(thumbnail,R.drawable.yt);
         }
+
+
+        // Drawer UI
+
+        LinearLayout playlist = findViewById(R.id.player_playlist);
+        playlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,PlaylistAct.class));
+            }
+        });
     }
 
     @Override
