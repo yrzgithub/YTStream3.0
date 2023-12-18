@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     final static String RESTORE = "restore";
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
+    Song song;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -112,6 +113,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if(toggle.onOptionsItemSelected(item)) return true;
+
+        int id = item.getItemId();
+
+        if(id==R.id.add)
+        {
+            Intent intent = new Intent(this, PlaylistAct.class);
+            intent.putExtra(SONG,song);
+            startActivity(intent);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

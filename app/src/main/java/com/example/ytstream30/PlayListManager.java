@@ -84,4 +84,10 @@ public class PlayListManager {
         File file = storage.getPlaylist_dir();
         return Arrays.stream(file.list()).collect(Collectors.toList());
     }
+
+    public List<MediaSource> getSources()
+    {
+        return storage.readObject(name);
+    }
+
 }

@@ -1,10 +1,13 @@
 package com.example.ytstream30;
 
+import static com.example.ytstream30.MainActivity.SONG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,11 +25,23 @@ public class PlaylistAct extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist);
 
+        playlist = findViewById(R.id.playlists_list);
+
         manager = new PlayListManager(this);
         adapter = new PlayListAdapter(PlaylistAct.this,manager.getPlaylistNames());
-
-        playlist = findViewById(R.id.playlists_list);
         playlist.setAdapter(adapter);
+
+        Intent intent = getIntent();
+
+        if(intent.hasExtra(SONG))
+        {
+            Song sng = (Song) intent.getSerializableExtra(SONG);
+        }
+        else
+        {
+
+        }
+
     }
 
     @Override

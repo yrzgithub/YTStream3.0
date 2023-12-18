@@ -15,6 +15,7 @@ import com.google.android.exoplayer2.source.MediaSourceEventListener;
 import com.google.android.exoplayer2.upstream.Allocator;
 import com.google.android.exoplayer2.upstream.TransferListener;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -53,6 +54,19 @@ public class MediaSource implements Serializable {
         else
         {
             return MediaItem.fromUri(local_path);
+        }
+    }
+
+    public String getTitle()
+    {
+        if(yt)
+        {
+            return song.getTitle();
+        }
+        else
+        {
+            File file = new File(local_path);
+            return file.getName();
         }
     }
 

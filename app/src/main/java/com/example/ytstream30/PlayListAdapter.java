@@ -1,6 +1,7 @@
 package com.example.ytstream30;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,13 +45,17 @@ public class PlayListAdapter extends BaseAdapter {
         {
             convertView = activity.getLayoutInflater().inflate(R.layout.custom_playlist,null);
 
+            String name = playlist_names.get(position);
+
             TextView title = convertView.findViewById(R.id.name);
-            title.setText(playlist_names.get(position));
+            title.setText(name);
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    Intent intent = new Intent(activity,PlayListSongsList.class);
+                    intent.putExtra(PlayListSongsList.SELECTED_LIST,name);
+                    activity.startActivity(intent);
                 }
             });
         }
