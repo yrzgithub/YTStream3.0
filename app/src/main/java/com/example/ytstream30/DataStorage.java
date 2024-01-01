@@ -48,8 +48,13 @@ public class DataStorage<T> {
 
     public T readObject(File file)
     {
+
+        Log.e("uruttu_file",String.valueOf(file.exists()));
+
         try
         {
+            assert file.exists();
+
             FileInputStream fileInputStream = new FileInputStream(file);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
@@ -69,6 +74,7 @@ public class DataStorage<T> {
 
     public T readObject(String name)
     {
+        Log.e("uruttu_name",String.valueOf(name));
         File file = new File(playlist_dir,name);
         return readObject(file);
     }

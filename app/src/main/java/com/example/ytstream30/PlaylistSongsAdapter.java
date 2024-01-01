@@ -1,6 +1,9 @@
 package com.example.ytstream30;
 
+import static com.example.ytstream30.MainActivity.SONG;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +51,15 @@ public class PlaylistSongsAdapter extends BaseAdapter {
 
             TextView title = convertView.findViewById(R.id.title);
             title.setText(title_);
+
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(act,MainActivity.class);
+                    intent.putExtra(SONG,source.getSong());
+                    act.startActivity(intent);
+                }
+            });
         }
 
         return convertView;
@@ -55,6 +67,7 @@ public class PlaylistSongsAdapter extends BaseAdapter {
 
     public void addSource(MediaSource source)
     {
-
+        this.sources.add(source);
+        notifyDataSetChanged();
     }
 }

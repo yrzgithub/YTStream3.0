@@ -58,7 +58,6 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
     ImageButton backward,forward,pause_or_play;
     DataRetriever retriever;
     Song song;
-    List<Song> songs = new ArrayList<>();
     Handler handler = new Handler();
 
     PlaySong(Activity activity)
@@ -149,15 +148,6 @@ class PlaySong extends Thread implements SeekBar.OnSeekBarChangeListener,Player.
                 updateUI();
             }
         });
-    }
-
-    @Override
-    public void onPlaybackStateChanged(int playbackState) {
-        switch (playbackState)
-        {
-
-        }
-        Player.Listener.super.onPlaybackStateChanged(playbackState);
     }
 
     public void forward()

@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.List;
+
 public class PlaylistAct extends AppCompatActivity {
 
     ListView playlist;
@@ -28,19 +30,22 @@ public class PlaylistAct extends AppCompatActivity {
         playlist = findViewById(R.id.playlists_list);
 
         manager = new PlayListManager(this);
-        adapter = new PlayListAdapter(PlaylistAct.this,manager.getPlaylistNames());
-        playlist.setAdapter(adapter);
+
+        List<String> playlist_names = manager.getPlaylistNames();
 
         Intent intent = getIntent();
 
         if(intent.hasExtra(SONG))
         {
             Song sng = (Song) intent.getSerializableExtra(SONG);
+            adapter = new PlayListAdapter(PlaylistAct.this,playlist_names,sng);
         }
         else
         {
-
+            adapter = new PlayListAdapter(PlaylistAct.this,playlist_names);
         }
+
+        playlist.setAdapter(adapter);
 
     }
 
