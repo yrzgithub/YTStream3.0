@@ -9,9 +9,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PersistableBundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,20 +25,27 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Player.Listener,Runnable {
 
-    TextView title;
+    TextView title,start,end;
     ImageView thumbnail,backward,forward,pause_or_play;
-    SeekBar bar;
-    PlaySong player;
+    SeekBar seek;
     final static String SONG = "song";
     final static String RESTORE = "restore";
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
     Song song;
+    String query;
+    static ExoPlayer player;
+    Runnable seek_runnable;
+    DataRetriever retriever;
+    Handler handler = new Handler();
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -43,12 +53,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        title = findViewById(R.id.title);
         thumbnail = findViewById(R.id.thumb);
+        title = findViewById(R.id.title);
+        seek = findViewById(R.id.seek);
+        start = findViewById(R.id.start);
+        end = findViewById(R.id.end);
         backward = findViewById(R.id.backward);
         forward = findViewById(R.id.forward_btn);
         pause_or_play = findViewById(R.id.play);
-        bar = findViewById(R.id.seek);
         drawer = findViewById(R.id.drawer);
 
         toggle = new ActionBarDrawerToggle(this,drawer,R.string.open,R.string.close);
@@ -66,6 +78,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        seek.setOnSeekBarChangeListener(this);
+
+        forward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                forward();
+            }
+        });
+
+        backward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                backward();
+            }
+        });
+
+        pause_or_play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                play_or_pause();
+            }
+        });
+
         Intent intent = getIntent();
 
         if(intent.hasExtra(SONG))
@@ -74,8 +109,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             Song song = intent.getSerializableExtra(MainActivity.SONG,Song.class);
 
-            player = new PlaySong(MainActivity.this,song);
-            player.start();
         }
         else
         {
@@ -90,6 +123,127 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this,PlaylistAct.class));
+            }
+        });
+    }
+
+    public void forward()
+    {
+        player.seekTo(player.getCurrentPosition()+ 5000);
+    }
+
+    public void backward()
+    {
+        player.seekTo(player.getCurrentPosition() - 5000);
+    }
+
+    public void play_or_pause()
+    {
+        if(player.isPlaying())
+        {
+            player.pause();
+            pause_or_play.setImageResource(R.drawable.play);
+        }
+        else
+        {
+            player.play();
+            pause_or_play.setImageResource(R.drawable.pause);
+        }
+    }
+
+    public void updateUI()
+    {
+        seek.setMax((int) song.getDuration());
+
+        String stream_url = song.getStream_url();
+        String thumbnail_url = song.getThumbnail_url();
+        String title = song.getTitle();
+        String duration = song.getDuration_str();
+
+        Log.e("uruttu_duration_str",duration);
+
+        this.end.setText(duration);
+
+        MainActivity.load_gif(thumbnail,thumbnail_url);
+        this.title.setText(title);
+
+        MediaItem item = MediaItem.fromUri(stream_url);
+        player.setMediaItem(item);
+        player.prepare();
+        player.play();
+
+        pause_or_play.setImageResource(R.drawable.pause);
+
+        updateSeek();
+
+        Glide.with(thumbnail).load(Uri.parse(thumbnail_url)).into(thumbnail);
+    }
+
+    public void updateSeek()
+    {
+        seek_runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                int buffered_position = Math.round(player.getBufferedPosition() / 1000);
+                int current_position = Math.round(player.getCurrentPosition() / 1000);
+
+                seek.setProgress(current_position);
+                seek.setSecondaryProgress(buffered_position);
+
+                String start = String.format("%2d.%02d",current_position/60,current_position%60);
+
+                MainActivity.this.start.setText(start);
+
+                if(player.getPlaybackState()!=Player.STATE_ENDED) handler.postDelayed(this,1000);
+            }
+        };
+
+        handler.post(seek_runnable);
+    }
+
+    public static void destroyPlayer()
+    {
+        player.seekTo(0);
+        player.pause();
+        player.stop();
+        player.release();
+    }
+
+    public void setNext(String query)
+    {
+        this.query = query;
+        this.song = null;
+        player.stop();
+    }
+
+    public void setNext(Song song)
+    {
+        this.song = song;
+        this.query = null;
+        player.stop();
+    }
+
+    @Override
+    public void run() {
+
+        if(query!=null)
+        {
+            retriever = new DataRetriever(this.query);
+            retriever.fetch();
+            song = retriever.get();
+        }
+        else
+        {
+            retriever = new DataRetriever();
+            String stream_rl = retriever.getStreamUrl(song);
+            song.setStream_url(stream_rl);
+        }
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
             }
         });
     }
@@ -147,18 +301,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
-        outState = new Bundle();
-        outState.putSerializable(RESTORE,player);
-        super.onSaveInstanceState(outState, outPersistentState);
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if(fromUser)
+        {
+            if(!handler.hasCallbacks(seek_runnable))
+            {
+                handler.post(seek_runnable);
+            }
+            player.seekTo(progress*1000);
+        }
     }
 
     @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        if(player.isPlaying()) player.pause();
+    }
 
-        PlaySong player = (PlaySong) savedInstanceState.getSerializable(RESTORE);
-        if(player!=null)  player.updateUI();
-
-        super.onRestoreInstanceState(savedInstanceState);
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        if(!player.isPlaying()) player.play();
     }
 }

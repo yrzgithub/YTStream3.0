@@ -11,6 +11,8 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.appcompat.widget.SearchView;
 
+import com.google.android.exoplayer2.ExoPlayer;
+
 import java.util.List;
 
 public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterView.OnItemClickListener {
@@ -18,7 +20,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
     SearchView search;
     AutoCompleteTextView auto;
     Activity act;
-    PlaySong player;
+    ExoPlayer player;
     SearchAdapter adapter;
 
     ShowSuggestions(Activity act, Menu menu) {
@@ -35,7 +37,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
         auto.setAdapter(adapter);
     }
 
-    public void setPlayer(PlaySong player)
+    public void setPlayer(ExoPlayer player)
     {
         this.player = player;
     }
@@ -47,7 +49,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
         search.onActionViewCollapsed();
         auto.dismissDropDown();
 
-        if(this.player!=null) this.player.destroyPlayer();
+        if(this.player!=null) MainActivity.destroyPlayer();
 
         Intent intent = new Intent(this.act, SearchResultsAct.class);
         intent.putExtra(SearchResultsAct.SEARCH_QUERY, query);
