@@ -34,6 +34,7 @@ import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
@@ -137,10 +138,18 @@ class Song implements Serializable
 {
     String yt_url,stream_url,thumbnail_url,title,error,publishedTime,channel,viewCount,duration_str,channel_url;
     float duration = 1;
+    boolean yt = true;
+    String local_path;
 
     Song()
     {
 
+    }
+
+    Song(String local_path)
+    {
+        this.local_path = local_path;
+        yt = false;
     }
 
     Song(PyObject videoMap)
@@ -184,6 +193,7 @@ class Song implements Serializable
             duration = 1;
         }
 
+        yt = true;
     }
 
     public Song(String yt_url, String stream_url, String thumbnail_url, String title, String error, String publishedTime, String channel, String viewCount, float duration) {
@@ -196,6 +206,33 @@ class Song implements Serializable
         this.channel = channel;
         this.viewCount = viewCount;
         this.duration = duration;
+
+        yt = true;
+    }
+
+    public MediaItem getSource()
+    {
+        if(yt)
+        {
+            return MediaItem.fromUri(stream_url);
+        }
+        else
+        {
+            return MediaItem.fromUri(local_path);
+        }
+    }
+
+    public String getTitle()
+    {
+        if(yt)
+        {
+            return title;
+        }
+        else
+        {
+            File file = new File(local_path);
+            return file.getName();
+        }
     }
 
     public String getChannel_url() {
@@ -230,6 +267,28 @@ class Song implements Serializable
         return duration;
     }
 
+    public boolean isYt() {
+        return yt;
+    }
+
+    public String getUriPath()
+    {
+        if(yt) return stream_url;
+        return local_path;
+    }
+
+    public void setYt(boolean yt) {
+        this.yt = yt;
+    }
+
+    public String getLocal_path() {
+        return local_path;
+    }
+
+    public void setLocal_path(String local_path) {
+        this.local_path = local_path;
+    }
+
     public String getYt_url() {
         return yt_url;
     }
@@ -252,10 +311,6 @@ class Song implements Serializable
 
     public void setThumbnail_url(String thumbnail_url) {
         this.thumbnail_url = thumbnail_url;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public void setTitle(String title) {

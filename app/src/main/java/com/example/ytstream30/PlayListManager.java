@@ -18,7 +18,7 @@ public class PlayListManager {
 
     File file;
     String name;
-    DataStorage<List<MediaSource>> storage;
+    DataStorage<List<Song>> storage;
 
 
     PlayListManager(Activity act)
@@ -31,7 +31,6 @@ public class PlayListManager {
     {
         this(act);
         this.name = playList_name;
-        printMediaStrings();
     }
 
     PlayListManager(Activity act,File file)
@@ -40,19 +39,19 @@ public class PlayListManager {
         this.name = file.getName();
     }
 
-    public boolean createPlayList(@NotNull List<MediaSource> items)
+    public boolean createPlayList(@NotNull List<Song> items)
     {
         return storage.writeObject(name,new ArrayList<>(items));
     }
 
-    public boolean createPlayList(MediaSource source)
+    public boolean createPlayList(Song source)
     {
-        List<MediaSource> sources = new ArrayList<>();
+        List<Song> sources = new ArrayList<>();
         sources.add(source);
         return storage.writeObject(name,sources);
     }
 
-    public boolean createPlayList(@NotNull MediaSource... sources)
+    public boolean createPlayList(@NotNull Song... sources)
     {
         return createPlayList(Arrays.asList(sources));
     }
@@ -62,21 +61,21 @@ public class PlayListManager {
         return storage.delete(name);
     }
 
-    public boolean addToPlayList(MediaSource source)
+    public boolean addToPlayList(Song source)
     {
-        List<MediaSource> sources = storage.readObject(name);
+        List<Song> sources = storage.readObject(name);
         sources.add(source);
         return storage.writeObject(name,sources);
     }
 
     public boolean deleteFromPlaylist(Song song_)
     {
-        List<MediaSource> sources = storage.readObject(name);
-        sources.remove(new MediaSource(song_));
+        List<Song> sources = storage.readObject(name);
+        sources.remove(song_);
         return storage.writeObject(name,sources);
     }
 
-    public List<List<MediaSource>> getPlaylists()
+    public List<List<Song>> getPlaylists()
     {
         File file = storage.getPlaylist_dir();
         File[] playlists = file.listFiles();
@@ -90,18 +89,13 @@ public class PlayListManager {
         return Arrays.stream(file.list()).collect(Collectors.toList());
     }
 
-    public void printMediaStrings()
-    {
-        Log.e("sanjay_sng_name",getSources().stream().map(MediaSource::getTitle).collect(Collectors.toList()).toString());
-    }
-
-    public List<MediaSource> getSources()
+    public List<Song> getSources()
     {
         return storage.readObject(name);
     }
 
     public List<MediaItem> getMediaItems()
     {
-        return getSources().stream().map(MediaSource::getSource).collect(Collectors.toList());
+        return getSources().stream().map(Song::getSource).collect(Collectors.toList());
     }
 }

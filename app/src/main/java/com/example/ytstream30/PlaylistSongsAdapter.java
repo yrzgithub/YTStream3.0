@@ -11,12 +11,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlaylistSongsAdapter extends BaseAdapter {
 
     Activity act;
-    List<MediaSource> sources;
+    List<Song> sources = new ArrayList<>();
     static final String PLAYLIST = "playlist_name";
     String playlist_name;
 
@@ -26,7 +27,7 @@ public class PlaylistSongsAdapter extends BaseAdapter {
         this.playlist_name = playlist_name;
 
         PlayListManager manager = new PlayListManager(act,playlist_name);
-        sources = manager.getSources();
+        sources.addAll(manager.getSources());
     }
 
     @Override
@@ -35,7 +36,7 @@ public class PlaylistSongsAdapter extends BaseAdapter {
     }
 
     @Override
-    public MediaSource getItem(int position) {
+    public Song getItem(int position) {
         return sources.get(position);
     }
 
@@ -51,7 +52,7 @@ public class PlaylistSongsAdapter extends BaseAdapter {
         {
             convertView = act.getLayoutInflater().inflate(R.layout.custom_playlist_song,null);
 
-            MediaSource source = sources.get(position);
+            Song source = sources.get(position);
             String title_ = source.getTitle();
 
             TextView title = convertView.findViewById(R.id.title);
@@ -61,7 +62,7 @@ public class PlaylistSongsAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(act,MainActivity.class);
-                    intent.putExtra(SONG,source.getSong());
+                    intent.putExtra(SONG,source);
                     intent.putExtra(PLAYLIST,playlist_name);
                     act.startActivity(intent);
                 }
@@ -71,7 +72,7 @@ public class PlaylistSongsAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void addSource(MediaSource source)
+    public void addSource(Song source)
     {
         this.sources.add(source);
         notifyDataSetChanged();

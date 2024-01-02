@@ -35,7 +35,7 @@ import com.google.android.exoplayer2.Player;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Player.Listener,Runnable {
+public class MainActivity extends AppCompatActivity implements Player.Listener, View.OnClickListener, SeekBar.OnSeekBarChangeListener, Runnable {
 
     TextView title,start,end;
     ImageView thumbnail,backward,forward,pause_or_play;
@@ -129,6 +129,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             player = getPlayer();
             player.setMediaItems(manager.getMediaItems());
+            player.addListener(this);
+            //player.setRepeatMode();
         }
 
         if(intent.hasExtra(SONG))
@@ -369,5 +371,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         if(!player.isPlaying()) player.play();
+    }
+
+    @Override
+    public void onPlaybackStateChanged(int playbackState) {
+        if(playbackState==Player.STATE_ENDED) player.seekToNextMediaItem();
+        Player.Listener.super.onPlaybackStateChanged(playbackState);
     }
 }

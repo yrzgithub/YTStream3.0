@@ -67,7 +67,7 @@ public class PlayListAdapter extends BaseAdapter {
                     public void onClick(View v) {
                         String playlist =  playlist_names.get(position);
                         PlayListManager manager = new PlayListManager(activity,playlist);
-                        manager.addToPlayList(new MediaSource(song));
+                        manager.addToPlayList(song);
 
                         Toast.makeText(activity,"Added",Toast.LENGTH_LONG).show();
                     }
