@@ -1,6 +1,10 @@
 package com.example.ytstream30;
 
 import android.app.Activity;
+import android.media.browse.MediaBrowser;
+import android.util.Log;
+
+import com.google.android.exoplayer2.MediaItem;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -27,6 +31,7 @@ public class PlayListManager {
     {
         this(act);
         this.name = playList_name;
+        printMediaStrings();
     }
 
     PlayListManager(Activity act,File file)
@@ -85,9 +90,18 @@ public class PlayListManager {
         return Arrays.stream(file.list()).collect(Collectors.toList());
     }
 
+    public void printMediaStrings()
+    {
+        Log.e("sanjay_sng_name",getSources().stream().map(MediaSource::getTitle).collect(Collectors.toList()).toString());
+    }
+
     public List<MediaSource> getSources()
     {
         return storage.readObject(name);
     }
 
+    public List<MediaItem> getMediaItems()
+    {
+        return getSources().stream().map(MediaSource::getSource).collect(Collectors.toList());
+    }
 }

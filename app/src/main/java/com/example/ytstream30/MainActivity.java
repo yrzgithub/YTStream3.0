@@ -1,5 +1,7 @@
 package com.example.ytstream30;
 
+import static com.example.ytstream30.PlaylistSongsAdapter.PLAYLIST;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -23,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -30,6 +33,7 @@ import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Player.Listener,Runnable {
 
@@ -101,21 +105,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        Intent intent = getIntent();
-
-        if(intent.hasExtra(SONG))
-        {
-            Glide.with(thumbnail).load(R.drawable.loading).into(thumbnail);
-
-            Song song = intent.getSerializableExtra(MainActivity.SONG,Song.class);
-
-        }
-        else
-        {
-            load_gif(thumbnail,R.drawable.yt);
-        }
-
-
         // Drawer UI
 
         LinearLayout playlist = findViewById(R.id.player_playlist);
@@ -125,6 +114,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(MainActivity.this,PlaylistAct.class));
             }
         });
+
+        Intent intent = getIntent();
+
+        stopSong();
+
+        if(intent.hasExtra(PLAYLIST)) // playlist = true
+        {
+            String playlist_name = intent.getStringExtra(PLAYLIST);
+
+            PlayListManager manager= new PlayListManager(this,playlist_name);
+
+            Log.e("sanjay_play", manager.getMediaItems().toString());
+
+            player = getPlayer();
+            player.setMediaItems(manager.getMediaItems());
+        }
+
+        if(intent.hasExtra(SONG))
+        {
+            Glide.with(thumbnail).load(R.drawable.loading).into(thumbnail);
+
+            song = intent.getSerializableExtra(MainActivity.SONG,Song.class);
+            startSong();
+        }
+        else
+        {
+            load_gif(thumbnail,R.drawable.yt);
+        }
+    }
+
+    public void startSong()
+    {
+        Thread sng = new Thread(this);
+        sng.start();
     }
 
     public void forward()
@@ -151,6 +174,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    public ExoPlayer getPlayer()
+    {
+        if(player==null)
+        {
+            player = new ExoPlayer.Builder(this).build();
+        }
+        return player;
+    }
+
+    public void stopSong()
+    {
+        if(player!=null)
+        {
+            player.pause();
+            player.stop();
+        }
+    }
+
     public void updateUI()
     {
         seek.setMax((int) song.getDuration());
@@ -166,6 +207,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         MainActivity.load_gif(thumbnail,thumbnail_url);
         this.title.setText(title);
+
+        player = getPlayer();
 
         MediaItem item = MediaItem.fromUri(stream_url);
         player.setMediaItem(item);
@@ -272,6 +315,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(id==R.id.add)
         {
+            if(song==null)
+            {
+                Toast.makeText(this,"Song not found",Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
             Intent intent = new Intent(this, PlaylistAct.class);
             intent.putExtra(SONG,song);
             startActivity(intent);

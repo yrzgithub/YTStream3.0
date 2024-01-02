@@ -74,6 +74,12 @@ public class MediaSource implements Serializable {
         return yt;
     }
 
+    public String getUriPath()
+    {
+        if(song!=null) return song.stream_url;
+        return local_path;
+    }
+
     public void setYt(boolean yt) {
         this.yt = yt;
     }

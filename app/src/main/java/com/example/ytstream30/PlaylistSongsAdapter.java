@@ -17,11 +17,16 @@ public class PlaylistSongsAdapter extends BaseAdapter {
 
     Activity act;
     List<MediaSource> sources;
+    static final String PLAYLIST = "playlist_name";
+    String playlist_name;
 
-    PlaylistSongsAdapter(Activity act, List<MediaSource> sources)
+    PlaylistSongsAdapter(Activity act,String playlist_name)
     {
         this.act = act;
-        this.sources = sources;
+        this.playlist_name = playlist_name;
+
+        PlayListManager manager = new PlayListManager(act,playlist_name);
+        sources = manager.getSources();
     }
 
     @Override
@@ -57,6 +62,7 @@ public class PlaylistSongsAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     Intent intent = new Intent(act,MainActivity.class);
                     intent.putExtra(SONG,source.getSong());
+                    intent.putExtra(PLAYLIST,playlist_name);
                     act.startActivity(intent);
                 }
             });

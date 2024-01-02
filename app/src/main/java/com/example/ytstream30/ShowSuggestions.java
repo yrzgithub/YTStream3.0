@@ -49,7 +49,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
         search.onActionViewCollapsed();
         auto.dismissDropDown();
 
-        if(this.player!=null) MainActivity.destroyPlayer();
+        //if(this.player!=null) MainActivity.destroyPlayer();
 
         Intent intent = new Intent(this.act, SearchResultsAct.class);
         intent.putExtra(SearchResultsAct.SEARCH_QUERY, query);

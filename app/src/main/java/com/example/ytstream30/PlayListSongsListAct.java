@@ -28,10 +28,7 @@ public class PlayListSongsListAct extends AppCompatActivity {
 
         String playlist_name = intent.getStringExtra(SELECTED_LIST);
 
-        manager = new PlayListManager(this,playlist_name);
-        List<MediaSource> sources =  manager.getSources();
-
-        PlaylistSongsAdapter adapter = new PlaylistSongsAdapter(this,sources);
+        PlaylistSongsAdapter adapter = new PlaylistSongsAdapter(this,playlist_name);
 
         list = findViewById(R.id.playlists_list);
         list.setAdapter(adapter);
