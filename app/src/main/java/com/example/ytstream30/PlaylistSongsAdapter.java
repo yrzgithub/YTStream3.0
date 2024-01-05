@@ -19,6 +19,7 @@ public class PlaylistSongsAdapter extends BaseAdapter {
     Activity act;
     List<Song> sources = new ArrayList<>();
     static final String PLAYLIST = "playlist_name";
+    static final String SONG_INDEX = "song_index";
     String playlist_name;
 
     PlaylistSongsAdapter(Activity act,String playlist_name)
@@ -63,6 +64,7 @@ public class PlaylistSongsAdapter extends BaseAdapter {
                 public void onClick(View v) {
                     Intent intent = new Intent(act,MainActivity.class);
                     intent.putExtra(SONG,source);
+                    intent.putExtra(SONG_INDEX,position);
                     intent.putExtra(PLAYLIST,playlist_name);
                     act.startActivity(intent);
                 }

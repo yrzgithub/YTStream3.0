@@ -119,6 +119,12 @@ class DataRetriever
         return stream_url;
     }
 
+    public Song putStreamUrl(Song song)
+    {
+        song.setStream_url(getStreamUrl(song));
+        return song;
+    }
+
     public List<String> getTitlesList()
     {
         List<Song> songs = fetch();
@@ -163,7 +169,6 @@ class Song implements Serializable
         thumbnail_url = videoData.getOrDefault(PyObject.fromJava("thumbnail"),null).toJava(String.class);
         channel = videoData.getOrDefault(PyObject.fromJava("channel"),null).toJava(String.class);
         channel_url = videoData.getOrDefault(PyObject.fromJava("channel_url"),null).toJava(String.class);
-
 
         try
         {

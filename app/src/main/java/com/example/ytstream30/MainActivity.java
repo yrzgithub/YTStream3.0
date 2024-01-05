@@ -1,8 +1,10 @@
 package com.example.ytstream30;
 
 import static com.example.ytstream30.PlaylistSongsAdapter.PLAYLIST;
+import static com.example.ytstream30.PlaylistSongsAdapter.SONG_INDEX;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,7 +35,9 @@ import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements Player.Listener, View.OnClickListener, SeekBar.OnSeekBarChangeListener, Runnable {
 
@@ -49,7 +53,9 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
     static ExoPlayer player;
     Runnable seek_runnable;
     DataRetriever retriever;
+    Thread playlist_thread;
     Handler handler = new Handler();
+    PlayListSongs playlist_sources;
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @Override
@@ -122,15 +128,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         if(intent.hasExtra(PLAYLIST)) // playlist = true
         {
             String playlist_name = intent.getStringExtra(PLAYLIST);
-
-            PlayListManager manager= new PlayListManager(this,playlist_name);
-
-            Log.e("sanjay_play", manager.getMediaItems().toString());
-
-            player = getPlayer();
-            player.setMediaItems(manager.getMediaItems());
-            player.addListener(this);
-            //player.setRepeatMode();
+            int index = intent.getIntExtra(SONG_INDEX,0);
         }
 
         if(intent.hasExtra(SONG))
@@ -138,12 +136,42 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             Glide.with(thumbnail).load(R.drawable.loading).into(thumbnail);
 
             song = intent.getSerializableExtra(MainActivity.SONG,Song.class);
-            startSong();
         }
         else
         {
             load_gif(thumbnail,R.drawable.yt);
         }
+    }
+
+    public void setMediaItems(List<Song> songs)
+    {
+        playlist_thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                List<MediaItem> items = new ArrayList<>();
+
+                for(Song song : songs)
+                {
+                    if(song.isYt())
+                    {
+                        DataRetriever retriever = new DataRetriever();
+                        song = retriever.putStreamUrl(song);
+                        items.add(song.getSource());
+                    }
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        player.setMediaItems(items);
+                    }
+                });
+
+            }
+        });
+
+        playlist_thread.start();
     }
 
     public void startSong()
@@ -210,18 +238,21 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         MainActivity.load_gif(thumbnail,thumbnail_url);
         this.title.setText(title);
 
-        player = getPlayer();
-
-        MediaItem item = MediaItem.fromUri(stream_url);
-        player.setMediaItem(item);
-        player.prepare();
-        player.play();
-
         pause_or_play.setImageResource(R.drawable.pause);
 
         updateSeek();
 
         Glide.with(thumbnail).load(Uri.parse(thumbnail_url)).into(thumbnail);
+
+        player = getPlayer();
+        player.setMediaItem(song.getSource());
+        player.prepare();
+        player.play();
+    }
+
+    public void play()
+    {
+
     }
 
     public void updateSeek()
@@ -375,7 +406,8 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
     @Override
     public void onPlaybackStateChanged(int playbackState) {
-        if(playbackState==Player.STATE_ENDED) player.seekToNextMediaItem();
+
         Player.Listener.super.onPlaybackStateChanged(playbackState);
+
     }
 }
