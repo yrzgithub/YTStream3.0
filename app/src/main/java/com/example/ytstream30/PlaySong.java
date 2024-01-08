@@ -146,6 +146,7 @@ class Song implements Serializable
     float duration = 1;
     boolean yt = true;
     String local_path;
+    static Song current_song;
 
     Song()
     {
@@ -225,6 +226,16 @@ class Song implements Serializable
         {
             return MediaItem.fromUri(local_path);
         }
+    }
+
+    public static Song getCurrentSong()
+    {
+        return current_song;
+    }
+
+    public static void setCurrentSong(Song current)
+    {
+        current_song = current;
     }
 
     public String getSourceString()
