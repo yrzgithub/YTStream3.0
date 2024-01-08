@@ -53,6 +53,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
 
         Intent intent = new Intent(this.act, SearchResultsAct.class);
         intent.putExtra(SearchResultsAct.SEARCH_QUERY, query);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         act.startActivity(intent);
         // act.finish();
 

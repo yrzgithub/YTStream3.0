@@ -222,6 +222,11 @@ class Song implements Serializable
         }
     }
 
+    public String getSourceString()
+    {
+        return yt?getStream_url():getLocal_path();
+    }
+
     public String getTitle()
     {
         if(yt)
@@ -269,12 +274,6 @@ class Song implements Serializable
 
     public boolean isYt() {
         return yt;
-    }
-
-    public String getUriPath()
-    {
-        if(yt) return stream_url;
-        return local_path;
     }
 
     public void setYt(boolean yt) {

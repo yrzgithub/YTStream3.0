@@ -44,11 +44,12 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
     final static String RESTORE = "restore";
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
-    Song song;
+    static Song song;
     String query;
     static ExoPlayer player;
     Runnable seek_runnable;
     DataRetriever retriever;
+    MenuItem add_menu;
     Handler handler = new Handler();
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -75,12 +76,12 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         if(getSupportActionBar()!=null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Marquee
-        title.post(new Runnable() {
+    /*    title.post(new Runnable() {
             @Override
             public void run() {
                 title.setSelected(true);
             }
-        });
+        }); */
 
         seek.setOnSeekBarChangeListener(this);
 
@@ -130,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             player = getPlayer();
             player.setMediaItems(manager.getMediaItems());
             player.addListener(this);
-            //player.setRepeatMode();
         }
 
         if(intent.hasExtra(SONG))
@@ -142,7 +142,8 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         }
         else
         {
-            load_gif(thumbnail,R.drawable.yt);
+            if(song==null)  load_gif(thumbnail,R.drawable.yt);
+            else updateUI();
         }
     }
 
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         }
     }
 
-    public void updateUI()
+    public String updateUI()
     {
         seek.setMax((int) song.getDuration());
 
@@ -203,25 +204,30 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         String title = song.getTitle();
         String duration = song.getDuration_str();
 
-        Log.e("uruttu_duration_str",duration);
-
         this.end.setText(duration);
 
         MainActivity.load_gif(thumbnail,thumbnail_url);
         this.title.setText(title);
 
-        player = getPlayer();
-
-        MediaItem item = MediaItem.fromUri(stream_url);
-        player.setMediaItem(item);
-        player.prepare();
-        player.play();
+        add_menu.setEnabled(true);
 
         pause_or_play.setImageResource(R.drawable.pause);
 
         updateSeek();
 
         Glide.with(thumbnail).load(Uri.parse(thumbnail_url)).into(thumbnail);
+
+        return stream_url;
+    }
+
+    public void play(String stream_url)
+    {
+        player = getPlayer();
+
+        MediaItem item = MediaItem.fromUri(stream_url);
+        player.setMediaItem(item);
+        player.prepare();
+        player.play();
     }
 
     public void updateSeek()
@@ -288,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         handler.post(new Runnable() {
             @Override
             public void run() {
-                updateUI();
+                play(updateUI());
             }
         });
     }
@@ -296,6 +302,9 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_act_menu,menu);
+
+        add_menu = menu.findItem(R.id.add);
+        add_menu.setEnabled(false);
 
         ShowSuggestions suggestions = new ShowSuggestions(this,menu);
         suggestions.setPlayer(player);
@@ -317,12 +326,6 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
         if(id==R.id.add)
         {
-            if(song==null)
-            {
-                Toast.makeText(this,"Song not found",Toast.LENGTH_SHORT).show();
-                return false;
-            }
-
             Intent intent = new Intent(this, PlaylistAct.class);
             intent.putExtra(SONG,song);
             startActivity(intent);

@@ -61,10 +61,14 @@ public class PlayListManager {
         return storage.delete(name);
     }
 
-    public boolean addToPlayList(Song source)
+    public boolean addToPlayList(@NotNull Song source)
     {
         List<Song> sources = storage.readObject(name);
-        sources.add(source);
+        if(sources.stream().noneMatch((song)->song.getSourceString().equals(source.getSourceString())))
+        {
+            sources.add(source);
+        }
+
         return storage.writeObject(name,sources);
     }
 
