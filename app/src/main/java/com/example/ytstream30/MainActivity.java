@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
     final static String RESTORE = "restore";
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
-    static Song song;
     String query;
     static ExoPlayer player;
     Runnable seek_runnable;
@@ -137,12 +136,13 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         {
             Glide.with(thumbnail).load(R.drawable.loading).into(thumbnail);
 
-            song = intent.getSerializableExtra(MainActivity.SONG,Song.class);
+            Song song = intent.getSerializableExtra(MainActivity.SONG,Song.class);
+            Song.setCurrentSong(song);
             startSong();
         }
         else
         {
-            if(song==null)  load_gif(thumbnail,R.drawable.yt);
+            if(Song.getCurrentSong()==null)  load_gif(thumbnail,R.drawable.yt);
             else updateUI();
         }
     }
@@ -197,6 +197,8 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
     public String updateUI()
     {
+        Song song = Song.getCurrentSong();
+
         seek.setMax((int) song.getDuration());
 
         String stream_url = song.getStream_url();
@@ -263,14 +265,14 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
     public void setNext(String query)
     {
+        Song.setCurrentSong(null);
         this.query = query;
-        this.song = null;
         player.stop();
     }
 
     public void setNext(Song song)
     {
-        this.song = song;
+        Song.setCurrentSong(song);
         this.query = null;
         player.stop();
     }
@@ -282,13 +284,16 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         {
             retriever = new DataRetriever(this.query);
             retriever.fetch();
-            song = retriever.get();
+            Song song = retriever.get();
+            Song.setCurrentSong(song);
         }
         else
         {
+            Song sng = Song.getCurrentSong();
             retriever = new DataRetriever();
-            String stream_rl = retriever.getStreamUrl(song);
-            song.setStream_url(stream_rl);
+            String stream_rl = retriever.getStreamUrl(sng);
+            sng.setStream_url(stream_rl);
+            Song.setCurrentSong(sng);
         }
 
         handler.post(new Runnable() {
@@ -327,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         if(id==R.id.add)
         {
             Intent intent = new Intent(this, PlaylistAct.class);
-            intent.putExtra(SONG,song);
+            intent.putExtra(SONG,Song.getCurrentSong());
             startActivity(intent);
         }
 
