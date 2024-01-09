@@ -61,20 +61,16 @@ public class PlayListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        String name;
-
         if(convertView==null)
         {
             convertView = activity.getLayoutInflater().inflate(R.layout.custom_playlist,null);
 
-            name = playlist_names.get(position);
-
             TextView title = convertView.findViewById(R.id.name);
             title.setVisibility(View.VISIBLE);
-            title.setText(name);
+            title.setText(playlist_names.get(position));
 
             EditText edit = convertView.findViewById(R.id.edit);
-            edit.setText(name);
+            edit.setText(playlist_names.get(position));
             edit.setVisibility(GONE);
 
             edit.setOnEditorActionListener((v, actionId, event) -> {
@@ -87,13 +83,19 @@ public class PlayListAdapter extends BaseAdapter {
                     edit.clearFocus();
                     title.clearFocus();
 
-                    PlayListManager manager = new PlayListManager(activity,name);
+                    PlayListManager manager = new PlayListManager(activity,playlist_names.get(position));
 
-                    String new_name = edit.getText().toString();
+                    String new_name = edit.getText().toString().trim();
 
                     if(manager.containsPlaylist(new_name))
                     {
                         Toast.makeText(activity,"Name already exists",Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+
+                    if(new_name.equals(""))
+                    {
+                        Toast.makeText(activity,"Name cannot be empty",Toast.LENGTH_SHORT).show();
                         return false;
                     }
 
@@ -102,6 +104,7 @@ public class PlayListAdapter extends BaseAdapter {
 
                     playlist_names.remove(position);
                     playlist_names.add(position,new_name);
+                    notifyDataSetChanged();
                 }
 
                 return false;
@@ -121,12 +124,12 @@ public class PlayListAdapter extends BaseAdapter {
                             int id = item.getItemId();
                             menu.dismiss();
 
-                            PlayListManager manager = new PlayListManager(activity,name);
+                            PlayListManager manager = new PlayListManager(activity,playlist_names.get(position));
 
                             if(id == R.id.delete)
                             {
                                 manager.deletePlayList();
-                                removePlaylist(name);
+                                removePlaylist(playlist_names.get(position));
                             }
 
                             else if (id == R.id.edit)

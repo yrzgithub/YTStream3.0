@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -70,10 +71,23 @@ public class PlaylistAct extends AppCompatActivity {
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String playlist_name = name.getText().toString();
-                            PlayListManager manager = new PlayListManager(PlaylistAct.this,playlist_name);
-                            manager.createPlayList();
+                            String playlist_name = name.getText().toString().trim();
 
+                            PlayListManager manager = new PlayListManager(PlaylistAct.this,playlist_name);
+
+                            if(manager.containsPlaylist(playlist_name))
+                            {
+                                Toast.makeText(PlaylistAct.this,"Name already exists",Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            if(playlist_name.equals(""))
+                            {
+                                Toast.makeText(PlaylistAct.this,"Name cannot be empty",Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            manager.createPlayList();
                             adapter.addPlaylist(playlist_name);
                         }
                     })

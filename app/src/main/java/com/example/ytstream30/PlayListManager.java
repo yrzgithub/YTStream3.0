@@ -87,8 +87,6 @@ public class PlayListManager {
         List<Song> songs = storage.readObject(name);
         deletePlayList();
         createPlayList(new_name,songs);
-
-        this.name = new_name;
     }
 
     public boolean deleteFromPlaylist(Song song_)
