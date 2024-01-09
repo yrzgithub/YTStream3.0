@@ -77,6 +77,11 @@ public class PlayListManager {
         return storage.writeObject(name,sources);
     }
 
+    public boolean containsPlaylist(String playlist)
+    {
+        return getPlaylistNames().contains(playlist);
+    }
+
     public void editPlaylistName(String new_name)
     {
         List<Song> songs = storage.readObject(name);
@@ -91,14 +96,6 @@ public class PlayListManager {
         List<Song> sources = storage.readObject(name);
         sources.remove(song_);
         return storage.writeObject(name,sources);
-    }
-
-    public List<List<Song>> getPlaylists()
-    {
-        File file = storage.getPlaylist_dir();
-        File[] playlists = file.listFiles();
-
-        return Arrays.stream(playlists).map(source->storage.readObject(source)).collect(Collectors.toList());
     }
 
     public List<String> getPlaylistNames()

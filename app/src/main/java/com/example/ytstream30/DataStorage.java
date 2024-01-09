@@ -67,14 +67,12 @@ public class DataStorage<T> {
         }
         catch (Exception e)
         {
-            Log.e("uruttu_object",e.getMessage());
             return null;
         }
     }
 
     public T readObject(String name)
     {
-        Log.e("uruttu_name",String.valueOf(name));
         File file = new File(playlist_dir,name);
         return readObject(file);
     }

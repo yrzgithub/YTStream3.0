@@ -115,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             }
         });
 
+        player = getPlayer();
+
         Intent intent = getIntent();
 
         stopSong();

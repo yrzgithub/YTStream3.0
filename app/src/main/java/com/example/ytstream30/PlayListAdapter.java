@@ -61,11 +61,13 @@ public class PlayListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        String name;
+
         if(convertView==null)
         {
             convertView = activity.getLayoutInflater().inflate(R.layout.custom_playlist,null);
 
-            String name = playlist_names.get(position);
+            name = playlist_names.get(position);
 
             TextView title = convertView.findViewById(R.id.name);
             title.setVisibility(View.VISIBLE);
@@ -75,29 +77,35 @@ public class PlayListAdapter extends BaseAdapter {
             edit.setText(name);
             edit.setVisibility(GONE);
 
-            edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            edit.setOnEditorActionListener((v, actionId, event) -> {
 
-                    if(actionId == EditorInfo.IME_ACTION_DONE)
+                if(actionId == EditorInfo.IME_ACTION_DONE)
+                {
+                    edit.setVisibility(GONE);
+                    title.setVisibility(View.VISIBLE);
+
+                    edit.clearFocus();
+                    title.clearFocus();
+
+                    PlayListManager manager = new PlayListManager(activity,name);
+
+                    String new_name = edit.getText().toString();
+
+                    if(manager.containsPlaylist(new_name))
                     {
-                        String new_name = edit.getText().toString();
-
-                        edit.setVisibility(GONE);
-
-                        title.setText(new_name);
-                        title.setVisibility(View.VISIBLE);
-
-                        PlayListManager manager = new PlayListManager(activity,name);
-                        manager.editPlaylistName(new_name);
-
-                        playlist_names.remove(position);
-                        playlist_names.add(position,new_name);
-                        notifyDataSetChanged();
+                        Toast.makeText(activity,"Name already exists",Toast.LENGTH_SHORT).show();
+                        return false;
                     }
 
-                    return false;
+                    title.setText(new_name);
+                    manager.editPlaylistName(new_name);
+
+                    playlist_names.remove(position);
+                    playlist_names.add(position,new_name);
                 }
+
+                return false;
+
             });
 
             ImageView pop = convertView.findViewById(R.id.pop);
@@ -155,9 +163,8 @@ public class PlayListAdapter extends BaseAdapter {
                     public void onClick(View v) {
 
                         Intent intent = new Intent(activity, PlayListSongsListAct.class);
-                        intent.putExtra(PlayListSongsListAct.SELECTED_LIST,name);
+                        intent.putExtra(PlayListSongsListAct.SELECTED_LIST,playlist_names.get(position));
                         activity.startActivity(intent);
-
                     }
                 });
             }
