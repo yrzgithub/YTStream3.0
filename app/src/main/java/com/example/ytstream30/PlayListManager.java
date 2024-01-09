@@ -44,6 +44,11 @@ public class PlayListManager {
         return storage.writeObject(name,new ArrayList<>(items));
     }
 
+    public boolean createPlayList(String playlist_name,List<Song> items)
+    {
+        return storage.writeObject(playlist_name,items);
+    }
+
     public boolean createPlayList(Song source)
     {
         List<Song> sources = new ArrayList<>();
@@ -70,6 +75,15 @@ public class PlayListManager {
         }
 
         return storage.writeObject(name,sources);
+    }
+
+    public void editPlaylistName(String new_name)
+    {
+        List<Song> songs = storage.readObject(name);
+        deletePlayList();
+        createPlayList(new_name,songs);
+
+        this.name = new_name;
     }
 
     public boolean deleteFromPlaylist(Song song_)

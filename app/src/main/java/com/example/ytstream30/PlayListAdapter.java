@@ -1,13 +1,17 @@
 package com.example.ytstream30;
 
+import static android.view.View.GONE;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.text.Editable;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -63,8 +67,38 @@ public class PlayListAdapter extends BaseAdapter {
 
             String name = playlist_names.get(position);
 
-            EditText title = convertView.findViewById(R.id.name);
+            TextView title = convertView.findViewById(R.id.name);
+            title.setVisibility(View.VISIBLE);
             title.setText(name);
+
+            EditText edit = convertView.findViewById(R.id.edit);
+            edit.setText(name);
+            edit.setVisibility(GONE);
+
+            edit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                    if(actionId == EditorInfo.IME_ACTION_DONE)
+                    {
+                        String new_name = edit.getText().toString();
+
+                        edit.setVisibility(GONE);
+
+                        title.setText(new_name);
+                        title.setVisibility(View.VISIBLE);
+
+                        PlayListManager manager = new PlayListManager(activity,name);
+                        manager.editPlaylistName(new_name);
+
+                        playlist_names.remove(position);
+                        playlist_names.add(position,new_name);
+                        notifyDataSetChanged();
+                    }
+
+                    return false;
+                }
+            });
 
             ImageView pop = convertView.findViewById(R.id.pop);
             pop.setOnClickListener(new View.OnClickListener() {
@@ -77,14 +111,20 @@ public class PlayListAdapter extends BaseAdapter {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
                             int id = item.getItemId();
+                            menu.dismiss();
+
+                            PlayListManager manager = new PlayListManager(activity,name);
 
                             if(id == R.id.delete)
                             {
-
+                                manager.deletePlayList();
+                                removePlaylist(name);
                             }
 
-                            else if (id == R.id.edit) {
-
+                            else if (id == R.id.edit)
+                            {
+                                title.setVisibility(GONE);
+                                edit.setVisibility(View.VISIBLE);
                             }
 
                             return true;
@@ -129,6 +169,12 @@ public class PlayListAdapter extends BaseAdapter {
     public void addPlaylist(String name)
     {
         playlist_names.add(name);
+        notifyDataSetChanged();
+    }
+
+    public void removePlaylist(String name)
+    {
+        playlist_names.remove(name);
         notifyDataSetChanged();
     }
 
