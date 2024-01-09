@@ -8,7 +8,7 @@
     android:layout_marginBottom="10dp"
     android:orientation="horizontal">
 
-    <TextView
+    <EditText
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_marginStart="5dp"
@@ -17,6 +17,8 @@
         android:layout_marginBottom="5dp"
         android:enabled="true"
         android:gravity="fill"
+        android:background="@null"
+        android:inputType="none"
         android:marqueeRepeatLimit="marquee_forever"
         android:padding="10dp"
         android:maxLines="1"
@@ -35,6 +37,7 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
+            android:id="@+id/pop"
             android:layout_gravity="center"
             android:contentDescription="@string/none"
             android:src="@drawable/arrow_drop_down" />

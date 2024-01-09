@@ -85,6 +85,10 @@ public class PlaylistAct extends AppCompatActivity {
                     })
                     .show();
         }
+        else if(id==R.id.delete)
+        {
+
+        }
 
         return super.onOptionsItemSelected(item);
     }

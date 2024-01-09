@@ -2,12 +2,18 @@ package com.example.ytstream30;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.text.Editable;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,8 +63,37 @@ public class PlayListAdapter extends BaseAdapter {
 
             String name = playlist_names.get(position);
 
-            TextView title = convertView.findViewById(R.id.name);
+            EditText title = convertView.findViewById(R.id.name);
             title.setText(name);
+
+            ImageView pop = convertView.findViewById(R.id.pop);
+            pop.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu menu = new PopupMenu(v.getContext(),v,Gravity.BOTTOM);
+                    menu.inflate(R.menu.playlist_popmenu);
+
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int id = item.getItemId();
+
+                            if(id == R.id.delete)
+                            {
+
+                            }
+
+                            else if (id == R.id.edit) {
+
+                            }
+
+                            return true;
+                        }
+                    });
+
+                    menu.show();
+                }
+            });
 
             if(add)
             {

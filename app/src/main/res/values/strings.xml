@@ -19,4 +19,6 @@
     <string name="developer_contact">Developer Contact</string>
     <string name="title">title</string>
     <string name="add">add</string>
+    <string name="delete">delete</string>
+    <string name="edit">edit</string>
 </resources>

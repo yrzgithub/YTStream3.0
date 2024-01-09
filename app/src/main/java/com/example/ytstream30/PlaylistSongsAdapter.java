@@ -79,4 +79,10 @@ public class PlaylistSongsAdapter extends BaseAdapter {
         this.sources.add(source);
         notifyDataSetChanged();
     }
+
+    public void removeSource(Song song)
+    {
+        this.sources.remove(song);
+        notifyDataSetChanged();
+    }
 }
