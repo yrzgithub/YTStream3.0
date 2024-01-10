@@ -66,20 +66,20 @@ public class PlayListAdapter extends BaseAdapter {
             convertView = activity.getLayoutInflater().inflate(R.layout.custom_playlist,null);
 
             TextView title = convertView.findViewById(R.id.name);
-            title.setVisibility(View.VISIBLE);
             title.setText(playlist_names.get(position));
 
             EditText edit = convertView.findViewById(R.id.edit);
             edit.setText(playlist_names.get(position));
-            edit.setVisibility(GONE);
+
+            show(title);
+            hide(edit);
 
             edit.setOnEditorActionListener((v, actionId, event) -> {
 
                 if(actionId == EditorInfo.IME_ACTION_DONE)
                 {
-                    title.setVisibility(View.VISIBLE);
-                    edit.setVisibility(GONE);
-                    edit.clearFocus();
+                   show(title);
+                   hide(edit);
 
                     PlayListManager manager = new PlayListManager(activity,playlist_names.get(position));
 
@@ -134,8 +134,8 @@ public class PlayListAdapter extends BaseAdapter {
 
                             else if (id == R.id.edit)
                             {
-                                title.setVisibility(GONE);
-                                edit.setVisibility(View.VISIBLE);
+                                hide(title);
+                                show(edit);
                             }
 
                             return true;
@@ -174,6 +174,18 @@ public class PlayListAdapter extends BaseAdapter {
         }
 
         return convertView;
+    }
+
+    public void show(View view)
+    {
+        view.requestFocus();
+        view.setVisibility(View.VISIBLE);
+    }
+
+    public void hide(View view)
+    {
+        view.clearFocus();
+        view.setVisibility(GONE);
     }
 
     public void addPlaylist(String name)
