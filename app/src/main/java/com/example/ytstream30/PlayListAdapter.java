@@ -77,11 +77,9 @@ public class PlayListAdapter extends BaseAdapter {
 
                 if(actionId == EditorInfo.IME_ACTION_DONE)
                 {
-                    edit.setVisibility(GONE);
                     title.setVisibility(View.VISIBLE);
-
+                    edit.setVisibility(GONE);
                     edit.clearFocus();
-                    title.clearFocus();
 
                     PlayListManager manager = new PlayListManager(activity,playlist_names.get(position));
 
@@ -90,21 +88,23 @@ public class PlayListAdapter extends BaseAdapter {
                     if(manager.containsPlaylist(new_name))
                     {
                         Toast.makeText(activity,"Name already exists",Toast.LENGTH_SHORT).show();
-                        return false;
                     }
 
-                    if(new_name.equals(""))
+                    else if(new_name.equals(""))
                     {
                         Toast.makeText(activity,"Name cannot be empty",Toast.LENGTH_SHORT).show();
-                        return false;
                     }
 
-                    title.setText(new_name);
-                    manager.editPlaylistName(new_name);
+                    else
+                    {
+                        title.setText(new_name);
+                        manager.editPlaylistName(new_name);
 
-                    playlist_names.remove(position);
-                    playlist_names.add(position,new_name);
-                    notifyDataSetChanged();
+                        playlist_names.remove(position);
+                        playlist_names.add(position,new_name);
+
+                        notifyDataSetChanged();
+                    }
                 }
 
                 return false;

@@ -67,6 +67,7 @@ public class DataStorage<T> {
         }
         catch (Exception e)
         {
+
             return null;
         }
     }
