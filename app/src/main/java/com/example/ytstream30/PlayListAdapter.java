@@ -90,7 +90,7 @@ public class PlayListAdapter extends BaseAdapter {
                         Toast.makeText(activity,"Name already exists",Toast.LENGTH_SHORT).show();
                     }
 
-                    else if(new_name.equals(""))
+                    else if(new_name.isEmpty())
                     {
                         Toast.makeText(activity,"Name cannot be empty",Toast.LENGTH_SHORT).show();
                     }

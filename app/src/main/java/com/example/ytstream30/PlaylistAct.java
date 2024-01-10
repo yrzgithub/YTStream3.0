@@ -81,7 +81,7 @@ public class PlaylistAct extends AppCompatActivity {
                                 return;
                             }
 
-                            if(playlist_name.equals(""))
+                            if(playlist_name.isEmpty())
                             {
                                 Toast.makeText(PlaylistAct.this,"Name cannot be empty",Toast.LENGTH_SHORT).show();
                                 return;
