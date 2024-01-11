@@ -9,8 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +35,7 @@ import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 
 import java.io.IOException;
+import java.security.Permission;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity implements Player.Listener, View.OnClickListener, SeekBar.OnSeekBarChangeListener, Runnable {
@@ -114,6 +117,13 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
                 startActivity(new Intent(MainActivity.this,PlaylistAct.class));
             }
         });
+
+        if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED)
+        {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1000);
+        }
+
+       new LocalSongs().fetch(this);
 
         player = getPlayer();
 
