@@ -1,12 +1,14 @@
 package com.example.ytstream30;
 
+import static com.example.ytstream30.Song.SONG_TYPE;
+import static com.example.ytstream30.Song.YT;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import androidx.appcompat.widget.SearchView;
@@ -21,7 +23,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
     AutoCompleteTextView auto;
     Activity act;
     ExoPlayer player;
-    SearchAdapter adapter;
+    YTSearchAdapter adapter;
 
     ShowSuggestions(Activity act, Menu menu) {
         search = (SearchView) menu.findItem(R.id.search).getActionView();
@@ -29,7 +31,7 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
 
         this.act = act;
 
-        adapter = new SearchAdapter(act);
+        adapter = new YTSearchAdapter(act);
 
         auto.setHint("Search YouTube");
         auto.setDropDownBackgroundResource(R.color.white);
@@ -52,9 +54,11 @@ public class ShowSuggestions implements SearchView.OnQueryTextListener, AdapterV
         //if(this.player!=null) MainActivity.destroyPlayer();
 
         Intent intent = new Intent(this.act, SearchResultsAct.class);
-        intent.putExtra(SearchResultsAct.SEARCH_QUERY, query);
+        intent.putExtra(SearchResultsAct.QUERY_PATH, query);
+        intent.putExtra(SONG_TYPE,YT);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         act.startActivity(intent);
+
         // act.finish();
 
         return false;

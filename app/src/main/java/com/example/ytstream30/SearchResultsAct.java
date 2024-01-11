@@ -25,7 +25,8 @@ public class SearchResultsAct extends AppCompatActivity {
 
     ListView list;
     ImageView loading;
-    final static String SEARCH_QUERY = "query";
+    final static String QUERY_PATH = "query";
+    String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,42 +40,51 @@ public class SearchResultsAct extends AppCompatActivity {
         Glide.with(loading).load(R.drawable.loading_pink_list).into(loading);
 
         Intent intent = getIntent();
-        String query = intent.getStringExtra(SEARCH_QUERY);
+        this.type = intent.getStringExtra(Song.SONG_TYPE);
+        String query_or_path = intent.getStringExtra(QUERY_PATH);
 
-        retrieve(query);
+        retrieve(query_or_path);
 
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                retrieve(query);
+                retrieve(query_or_path);
                 swipe.setRefreshing(false);
             }
         });
     }
 
-    public void retrieve(String query)
+    public void retrieve(String query_or_path)
     {
-        Handler handler = new Handler();
+        if(type.equals(Song.YT))
+        {
+            Handler handler = new Handler();
 
-        Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                DataRetriever retriever = new DataRetriever(query);
-                List<Song> songs =  retriever.fetch();
+            Executor executor = Executors.newSingleThreadExecutor();
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    DataRetriever retriever = new DataRetriever(query_or_path);
+                    List<Song> songs =  retriever.fetch();
 
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        loading.setVisibility(View.GONE);
-                        list.setVisibility(View.VISIBLE);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            loading.setVisibility(View.GONE);
+                            list.setVisibility(View.VISIBLE);
 
-                        SongsListAdapter adapter = new SongsListAdapter(SearchResultsAct.this,songs);
-                        list.setAdapter(adapter);
-                    }
-                });
-            }
-        });
+                            YTSongsListAdapter adapter = new YTSongsListAdapter(SearchResultsAct.this,songs);
+                            list.setAdapter(adapter);
+                        }
+                    });
+                }
+            });
+        }
+
+        else
+        {
+
+        }
     }
 
     @Override

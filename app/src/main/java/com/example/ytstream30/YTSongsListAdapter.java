@@ -12,17 +12,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
-public class SongsListAdapter extends BaseAdapter {
+public class YTSongsListAdapter extends BaseAdapter {
 
     List<Song> songs;
     LayoutInflater inflater;
     Activity act;
 
-    SongsListAdapter(Activity act,List<Song> songs)
+    YTSongsListAdapter(Activity act, List<Song> songs)
     {
         this.songs = songs;
         inflater = act.getLayoutInflater();

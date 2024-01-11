@@ -150,6 +150,10 @@ class Song implements Serializable
     String local_path;
     static Song current_song;
 
+    final static String SONG_TYPE = "song_type";
+    final static String LOCAL = "local";
+    final static String YT = "yt";
+
     Song()
     {
 

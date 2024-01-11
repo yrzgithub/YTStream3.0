@@ -2,7 +2,6 @@ package com.example.ytstream30;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -14,18 +13,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SearchAdapter extends BaseAdapter implements Filterable {
+public class YTSearchAdapter extends BaseAdapter implements Filterable {
 
     List<String> suggestions = Collections.synchronizedList(new ArrayList<>());
     Activity act;
 
-    SearchAdapter(Activity act,List<String> titles)
+    YTSearchAdapter(Activity act, List<String> titles)
     {
         this(act);
         addAll(titles);
     }
 
-    SearchAdapter(Activity act)
+    YTSearchAdapter(Activity act)
     {
         this.act = act;
     }
