@@ -23,6 +23,8 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="10dp"
             android:layout_height="wrap_content">
 
             <TextView
@@ -33,6 +35,7 @@
                 android:layout_marginEnd="5dp"
                 android:gravity="fill"
                 android:maxLines="3"
+                android:textSize="16sp"
                 android:text="@string/none"
                 android:textColor="@color/black" />
 
@@ -50,13 +53,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="10dp"
             android:orientation="horizontal">
 
             <com.google.android.material.imageview.ShapeableImageView
                 app:shapeAppearanceOverlay="@style/round"
                 android:id="@+id/uploader_icon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"/>
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
 
             <TextView
                 android:layout_width="match_parent"

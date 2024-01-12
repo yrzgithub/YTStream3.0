@@ -2,7 +2,6 @@ package com.example.ytstream30;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +47,7 @@ public class YTSongsListAdapter extends BaseAdapter {
 
         if(convertView==null)
         {
-            convertView = inflater.inflate(R.layout.list_view_result,null);
+            convertView = inflater.inflate(R.layout.custom_yt_search,null);
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
