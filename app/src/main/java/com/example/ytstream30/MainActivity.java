@@ -120,10 +120,10 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
         if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED)
         {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1000);
+            Intent intent = new Intent(Intent.PERMISSION)
         }
 
-
+        new LocalSongs().fetch(this);   // Local Song Debug
 
         player = getPlayer();
 
