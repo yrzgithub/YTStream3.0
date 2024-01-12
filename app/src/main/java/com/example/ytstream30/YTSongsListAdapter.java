@@ -71,7 +71,7 @@ public class YTSongsListAdapter extends BaseAdapter {
 
             Song song = songs.get(position);
 
-            Uri thumb_url = song.getThumbnail_url();
+            String thumb_url = song.getThumbnail_url();
 
             String uploader_url = song.getChannel_url();
             String title = song.getTitle();

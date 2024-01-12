@@ -135,8 +135,6 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
             PlayListManager manager= new PlayListManager(this,playlist_name);
 
-            Log.e("sanjay_play", manager.getMediaItems().toString());
-
             player = getPlayer();
             player.setMediaItems(manager.getMediaItems());
             player.addListener(this);
@@ -215,12 +213,19 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         String title = song.getTitle();
         String duration = song.getDuration_str();
 
-        Uri thumbnail_uri = song.getThumbnail_url();
+        String thumbnail_url = song.getThumbnail_url();
 
         this.end.setText(duration);
-
-        MainActivity.load_gif(thumbnail,thumbnail_uri);
         this.title.setText(title);
+
+        if(song.isYt())
+        {
+            MainActivity.load_gif(thumbnail,thumbnail_url);
+        }
+        else
+        {
+            MainActivity.load_gif(thumbnail,R.drawable.local_song_playing);
+        }
 
         if(add_menu!=null) add_menu.setEnabled(true);
 
@@ -304,10 +309,6 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             String stream_rl = retriever.getStreamUrl(current);
             current.setStream_url(stream_rl);
         }
-        else
-        {
-
-        }
 
         handler.post(new Runnable() {
             @Override
@@ -322,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         getMenuInflater().inflate(R.menu.main_act_menu,menu);
 
         add_menu = menu.findItem(R.id.add);
-        add_menu.setEnabled(false);
+        add_menu.setEnabled(Song.getCurrentSong()!=null && !Song.getCurrentSong().isYt());
 
         ShowSuggestions suggestions = new ShowSuggestions(this,menu);
         suggestions.setPlayer(player);
@@ -402,9 +403,9 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         Glide.with(v).load(id).into(v);
     }
 
-    public static void load_gif(ImageView v,Uri uri)
+    public static void load_gif(ImageView v,String url)
     {
-        if(v.getContext()!=null) Glide.with(v).load(uri).into(v);
+        if(v.getContext()!=null) Glide.with(v).load(url).into(v);
     }
 
     @Override

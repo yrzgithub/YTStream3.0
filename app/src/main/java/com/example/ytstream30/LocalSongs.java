@@ -6,6 +6,8 @@ import android.content.res.loader.ResourcesProvider;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadata;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -29,10 +31,10 @@ public class LocalSongs {
 
     }
 
-    public List<Song> fetch(final Context context)
-    {
+    public List<Song> fetch(final Context context) {
+
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {MediaStore.Audio.Media.TITLE,MediaStore.Audio.Media.ARTIST,MediaStore.Audio.Media.DATA,MediaStore.Audio.Media.DURATION,};
+        String[] projection = {MediaStore.Audio.Media.DISPLAY_NAME,MediaStore.Audio.Media.ARTIST,MediaStore.Audio.Media.DATA,MediaStore.Audio.Media.DURATION,};
         String selection = MediaStore.Audio.Media.IS_DOWNLOAD + "!=0";
 
         ContentResolver resolver = context.getContentResolver();
@@ -42,7 +44,7 @@ public class LocalSongs {
         if(cursor!=null && cursor.moveToFirst())
         {
 
-            int title_index = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int title_index = cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
             int data_index = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             int duration_index = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
             int artist_index = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);

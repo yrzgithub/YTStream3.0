@@ -329,16 +329,8 @@ class Song implements Serializable
         this.stream_url = stream_url;
     }
 
-    public Uri getThumbnail_url() {
-
-        if(isYt())
-        {
-            return Uri.parse(thumbnail_url);
-        }
-        else
-        {
-            return Uri.parse(local_path);
-        }
+    public String getThumbnail_url() {
+        return thumbnail_url;
     }
 
     public void setThumbnail_url(String thumbnail_url) {
