@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},1000);
         }
 
-       new LocalSongs().fetch(this);
+
 
         player = getPlayer();
 
