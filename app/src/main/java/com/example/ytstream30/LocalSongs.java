@@ -56,7 +56,7 @@ public class LocalSongs {
                 String artist = cursor.getString(artist_index);
                 float duration = cursor.getFloat(duration_index);
 
-                if(artist.equals("<unknown>")) artist = "";
+                if(artist.equals("<unknown>")) artist = "Downloads";
 
                 Song song = new Song(path);
                 song.setTitle(title);
