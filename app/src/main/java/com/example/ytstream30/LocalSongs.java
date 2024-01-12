@@ -1,12 +1,22 @@
 package com.example.ytstream30;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.loader.ResourcesProvider;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Size;
 
+import androidx.core.content.res.ResourcesCompat;
+
+import com.google.common.io.Resources;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +32,12 @@ public class LocalSongs {
     public List<Song> fetch(final Context context)
     {
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {MediaStore.Audio.Media.TITLE,MediaStore.Audio.Media.DATA,MediaStore.Audio.Media.DURATION,};
+        String[] projection = {MediaStore.Audio.Media.TITLE,MediaStore.Audio.Media.ARTIST,MediaStore.Audio.Media.DATA,MediaStore.Audio.Media.DURATION,};
         String selection = MediaStore.Audio.Media.IS_DOWNLOAD + "!=0";
 
-        Cursor cursor = context.getContentResolver().query(uri,projection,selection,null,null);
+        ContentResolver resolver = context.getContentResolver();
+
+        Cursor cursor = resolver.query(uri,projection,selection,null,null);
 
         if(cursor!=null && cursor.moveToFirst())
         {
@@ -41,6 +53,8 @@ public class LocalSongs {
                 String path = cursor.getString(data_index);
                 String artist = cursor.getString(artist_index);
                 float duration = cursor.getFloat(duration_index);
+
+                if(artist.equals("<unknown>")) artist = "";
 
                 Song song = new Song(path);
                 song.setTitle(title);

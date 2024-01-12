@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -39,6 +41,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -289,7 +292,6 @@ class Song implements Serializable
         for(int index=0;index<duration_string_length;++index)
         {
             duration += Math.pow(60,duration_string_length-index-1) * Float.parseFloat(duration_string[index]);
-            //Log.e("uruttu__duration", String.valueOf(Math.pow(60,index)));
         }
 
         return duration;
@@ -327,8 +329,16 @@ class Song implements Serializable
         this.stream_url = stream_url;
     }
 
-    public String getThumbnail_url() {
-        return thumbnail_url;
+    public Uri getThumbnail_url() {
+
+        if(isYt())
+        {
+            return Uri.parse(thumbnail_url);
+        }
+        else
+        {
+            return Uri.parse(local_path);
+        }
     }
 
     public void setThumbnail_url(String thumbnail_url) {
@@ -376,6 +386,11 @@ class Song implements Serializable
     }
 
     public void setDuration(float duration) {
+        if(!isYt())
+        {
+            duration /= 1000;
+            duration_str = String.format("%d:%02d",(int) Math.round(duration/60),(int) Math.round(duration%60));
+        }
         this.duration = duration;
     }
 }

@@ -61,6 +61,12 @@ public class SearchResultsAct extends AppCompatActivity {
         });
     }
 
+    public void showList()
+    {
+        loading.setVisibility(View.GONE);
+        list.setVisibility(View.VISIBLE);
+    }
+
     public void retrieve(Intent intent)
     {
         String type = intent.getStringExtra(Song.SONG_TYPE);
@@ -81,8 +87,8 @@ public class SearchResultsAct extends AppCompatActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            loading.setVisibility(View.GONE);
-                            list.setVisibility(View.VISIBLE);
+
+                            showList();
 
                             YTSongsListAdapter adapter = new YTSongsListAdapter(SearchResultsAct.this,songs);
                             list.setAdapter(adapter);
@@ -94,7 +100,7 @@ public class SearchResultsAct extends AppCompatActivity {
 
         else
         {
-            if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            if(checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED)
             {
                 new AlertDialog.Builder(this)
                         .setTitle(getResources().getString(R.string.app_name))
@@ -115,8 +121,10 @@ public class SearchResultsAct extends AppCompatActivity {
                         .show();
             }
 
+            showList();
 
-
+            LocalSongsListAdapter adapter = new LocalSongsListAdapter(this);
+            list.setAdapter(adapter);
         }
     }
 

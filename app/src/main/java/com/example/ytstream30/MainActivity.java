@@ -76,6 +76,10 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         pause_or_play = findViewById(R.id.play);
         drawer = findViewById(R.id.drawer);
 
+        forward.setOnClickListener(this);
+        backward.setOnClickListener(this);
+        pause_or_play.setOnClickListener(this);
+
         toggle = new ActionBarDrawerToggle(this,drawer,R.string.open,R.string.close);
 
         drawer.addDrawerListener(toggle);
@@ -110,6 +114,14 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         settings = findViewById(R.id.settings);
         update_or_about = findViewById(R.id.update_or_about);
         developer_contact = findViewById(R.id.developer_contact);
+
+        playlist.setOnClickListener(this);
+        local.setOnClickListener(this);
+        search.setOnClickListener(this);
+        downloads.setOnClickListener(this);
+        settings.setOnClickListener(this);
+        update_or_about.setOnClickListener(this);
+        developer_contact.setOnClickListener(this);
 
         player = getPlayer();
 
@@ -200,22 +212,21 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         seek.setMax((int) song.getDuration());
 
         String stream_url = song.getStream_url();
-        String thumbnail_url = song.getThumbnail_url();
         String title = song.getTitle();
         String duration = song.getDuration_str();
 
+        Uri thumbnail_uri = song.getThumbnail_url();
+
         this.end.setText(duration);
 
-        MainActivity.load_gif(thumbnail,thumbnail_url);
+        MainActivity.load_gif(thumbnail,thumbnail_uri);
         this.title.setText(title);
 
-        add_menu.setEnabled(true);
+        if(add_menu!=null) add_menu.setEnabled(true);
 
         pause_or_play.setImageResource(R.drawable.pause);
 
         updateSeek();
-
-        Glide.with(thumbnail).load(Uri.parse(thumbnail_url)).into(thumbnail);
 
         return stream_url;
     }
@@ -224,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
     {
         player = getPlayer();
 
-        MediaItem item = MediaItem.fromUri(stream_url);
+        MediaItem item = Song.getCurrentSong().getSource();
         player.setMediaItem(item);
         player.prepare();
         player.play();
@@ -242,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
                 seek.setProgress(current_position);
                 seek.setSecondaryProgress(buffered_position);
 
-                String start = String.format("%2d.%02d",current_position/60,current_position%60);
+                String start = String.format("%d:%02d",current_position/60,current_position%60);
 
                 MainActivity.this.start.setText(start);
 
@@ -278,6 +289,8 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
     @Override
     public void run() {
 
+        Song current = Song.getCurrentSong();
+
         if(query!=null)
         {
             retriever = new DataRetriever(this.query);
@@ -285,13 +298,15 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             Song song = retriever.get();
             Song.setCurrentSong(song);
         }
+        else if(current.isYt())
+        {
+            retriever = new DataRetriever();
+            String stream_rl = retriever.getStreamUrl(current);
+            current.setStream_url(stream_rl);
+        }
         else
         {
-            Song sng = Song.getCurrentSong();
-            retriever = new DataRetriever();
-            String stream_rl = retriever.getStreamUrl(sng);
-            sng.setStream_url(stream_rl);
-            Song.setCurrentSong(sng);
+
         }
 
         handler.post(new Runnable() {
@@ -387,9 +402,9 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         Glide.with(v).load(id).into(v);
     }
 
-    public static void load_gif(ImageView v,String url)
+    public static void load_gif(ImageView v,Uri uri)
     {
-        if(v.getContext()!=null) Glide.with(v).load(url).into(v);
+        if(v.getContext()!=null) Glide.with(v).load(uri).into(v);
     }
 
     @Override

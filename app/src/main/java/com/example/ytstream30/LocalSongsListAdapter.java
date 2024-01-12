@@ -1,6 +1,10 @@
 package com.example.ytstream30;
 
-import android.app.Activity;
+import static com.example.ytstream30.MainActivity.SONG;
+
+import android.content.Context;
+import android.content.Intent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -12,14 +16,14 @@ import java.util.List;
 public class LocalSongsListAdapter extends BaseAdapter {
 
     List<Song> songs = new ArrayList<>();
-    Activity activity;
+    Context context;
 
-    LocalSongsListAdapter(Activity activity)
+    LocalSongsListAdapter(Context context)
     {
-        this.activity = activity;
+        this.context = context;
 
         LocalSongs local = new LocalSongs();
-        songs.addAll(local.fetch(activity));
+        songs.addAll(local.fetch(context));
     }
 
     @Override
@@ -42,12 +46,21 @@ public class LocalSongsListAdapter extends BaseAdapter {
 
         if(convertView==null)
         {
-            convertView = activity.getLayoutInflater().inflate(R.layout.local_songs_adapter,null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.local_songs_adapter,null);
 
             Song song = songs.get(position);
 
             String title_ = song.getTitle();
             String artist_ = song.getChannel();
+
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context,MainActivity.class);
+                    intent.putExtra(SONG,song);
+                    context.startActivity(intent);
+                }
+            });
 
             TextView title = convertView.findViewById(R.id.title_local_songs);
             TextView artist = convertView.findViewById(R.id.artist);

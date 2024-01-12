@@ -2,6 +2,7 @@ package com.example.ytstream30;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,7 +71,8 @@ public class YTSongsListAdapter extends BaseAdapter {
 
             Song song = songs.get(position);
 
-            String thumb_url = song.getThumbnail_url();
+            Uri thumb_url = song.getThumbnail_url();
+
             String uploader_url = song.getChannel_url();
             String title = song.getTitle();
             String channel_str = song.getChannel();
