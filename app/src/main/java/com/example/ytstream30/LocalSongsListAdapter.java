@@ -1,8 +1,10 @@
 package com.example.ytstream30;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,10 +12,14 @@ import java.util.List;
 public class LocalSongsListAdapter extends BaseAdapter {
 
     List<Song> songs = new ArrayList<>();
+    Activity activity;
 
-    LocalSongsListAdapter(List<Song> songs)
+    LocalSongsListAdapter(Activity activity)
     {
-        this.songs.addAll(songs);
+        this.activity = activity;
+
+        LocalSongs local = new LocalSongs();
+        songs.addAll(local.fetch(activity));
     }
 
     @Override
@@ -36,7 +42,18 @@ public class LocalSongsListAdapter extends BaseAdapter {
 
         if(convertView==null)
         {
+            convertView = activity.getLayoutInflater().inflate(R.layout.local_songs_adapter,null);
 
+            Song song = songs.get(position);
+
+            String title_ = song.getTitle();
+            String artist_ = song.getChannel();
+
+            TextView title = convertView.findViewById(R.id.title_local_songs);
+            TextView artist = convertView.findViewById(R.id.artist);
+
+            title.setText(title_);
+            artist.setText(artist_);
         }
 
         return convertView;

@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/player_nav"
+        android:id="@+id/local"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:clickable="true"
@@ -67,7 +67,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/songs_list_nav"
+        android:id="@+id/search_list"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -95,7 +95,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/downloads_nav"
+        android:id="@+id/downloads"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -123,7 +123,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/settings_nav"
+        android:id="@+id/settings"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -151,7 +151,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/about_nav"
+        android:id="@+id/update_or_about"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
@@ -179,7 +179,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/developer_contact_nav"
+        android:id="@+id/developer_contact"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"

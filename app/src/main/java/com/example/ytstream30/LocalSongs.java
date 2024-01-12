@@ -19,7 +19,7 @@ public class LocalSongs {
 
     }
 
-    public void fetch(final Context context)
+    public List<Song> fetch(final Context context)
     {
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Audio.Media.TITLE,MediaStore.Audio.Media.DATA,MediaStore.Audio.Media.DURATION,};
@@ -33,18 +33,19 @@ public class LocalSongs {
             int title_index = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int data_index = cursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             int duration_index = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
+            int artist_index = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
 
             do
             {
                 String title = cursor.getString(title_index);
                 String path = cursor.getString(data_index);
+                String artist = cursor.getString(artist_index);
                 float duration = cursor.getFloat(duration_index);
-
-                Log.e("uruttu_title",title);
 
                 Song song = new Song(path);
                 song.setTitle(title);
                 song.setDuration(duration);
+                song.setChannel(artist);
 
                 songs.add(song);
 
@@ -52,5 +53,7 @@ public class LocalSongs {
 
             cursor.close();
         }
+
+        return songs;
     }
 }

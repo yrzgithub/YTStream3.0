@@ -1,19 +1,30 @@
 package com.example.ytstream30;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.window.OnBackInvokedCallback;
+import android.window.OnBackInvokedDispatcher;
 
 import com.bumptech.glide.Glide;
 
@@ -26,7 +37,6 @@ public class SearchResultsAct extends AppCompatActivity {
     ListView list;
     ImageView loading;
     final static String QUERY_PATH = "query";
-    String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,31 +50,32 @@ public class SearchResultsAct extends AppCompatActivity {
         Glide.with(loading).load(R.drawable.loading_pink_list).into(loading);
 
         Intent intent = getIntent();
-        this.type = intent.getStringExtra(Song.SONG_TYPE);
-        String query_or_path = intent.getStringExtra(QUERY_PATH);
-
-        retrieve(query_or_path);
+        retrieve(intent);
 
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                retrieve(query_or_path);
+                retrieve(intent);
                 swipe.setRefreshing(false);
             }
         });
     }
 
-    public void retrieve(String query_or_path)
+    public void retrieve(Intent intent)
     {
+        String type = intent.getStringExtra(Song.SONG_TYPE);
+
         if(type.equals(Song.YT))
         {
+            String query = intent.getStringExtra(QUERY_PATH);
+
             Handler handler = new Handler();
 
             Executor executor = Executors.newSingleThreadExecutor();
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    DataRetriever retriever = new DataRetriever(query_or_path);
+                    DataRetriever retriever = new DataRetriever(query);
                     List<Song> songs =  retriever.fetch();
 
                     handler.post(new Runnable() {
@@ -83,6 +94,28 @@ public class SearchResultsAct extends AppCompatActivity {
 
         else
         {
+            if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+            {
+                new AlertDialog.Builder(this)
+                        .setTitle(getResources().getString(R.string.app_name))
+                        .setIcon(ResourcesCompat.getDrawable(getResources(),R.drawable.ic_launcher_foreground,null))
+                        .setMessage("Do You want to Enable permissions")
+                        .setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package",getPackageName(),null)));
+                            }
+                        })
+                        .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                SearchResultsAct.super.getOnBackPressedDispatcher().onBackPressed();
+                            }
+                        })
+                        .show();
+            }
+
+
 
         }
     }

@@ -1,6 +1,9 @@
 package com.example.ytstream30;
 
 import static com.example.ytstream30.PlaylistSongsAdapter.PLAYLIST;
+import static com.example.ytstream30.Song.LOCAL;
+import static com.example.ytstream30.Song.SONG_TYPE;
+import static com.google.common.io.Resources.getResource;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -13,11 +16,13 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
     Runnable seek_runnable;
     DataRetriever retriever;
     MenuItem add_menu;
+    LinearLayout playlist,local,search,downloads,settings,update_or_about,developer_contact;
     Handler handler = new Handler();
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
@@ -78,54 +84,32 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         if(getSupportActionBar()!=null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Marquee
-    /*    title.post(new Runnable() {
+        title.post(new Runnable() {
             @Override
             public void run() {
-                title.setSelected(true);
+                String title_ = MainActivity.this.title.getText().toString();
+                int len = title_.length();
+
+                int sizeInPx = (int) title.getTextSize() * len;
+                int widthInPx = getResources().getDisplayMetrics().widthPixels;
+
+                float threshold = 1.5F;
+
+                if(sizeInPx * threshold > widthInPx)  title.setSelected(true);
             }
-        }); */
+        });
 
         seek.setOnSeekBarChangeListener(this);
 
-        forward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                forward();
-            }
-        });
-
-        backward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                backward();
-            }
-        });
-
-        pause_or_play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                play_or_pause();
-            }
-        });
-
         // Drawer UI
 
-        LinearLayout playlist = findViewById(R.id.player_playlist);
-        playlist.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this,PlaylistAct.class));
-            }
-        });
-
-        if(checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED)
-        {
-            Intent intent = new Intent(Intent.ACTION_AUTO_REVOKE_PERMISSIONS);
-            intent.setPackage(getPackageName());
-            startActivity(intent);
-        }
-
-        new LocalSongs().fetch(this);   // Local Song Debug
+        playlist = findViewById(R.id.player_playlist);
+        local = findViewById(R.id.local);
+        search = findViewById(R.id.search_list);
+        downloads = findViewById(R.id.downloads);
+        settings = findViewById(R.id.settings);
+        update_or_about = findViewById(R.id.update_or_about);
+        developer_contact = findViewById(R.id.developer_contact);
 
         player = getPlayer();
 
@@ -355,6 +339,46 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
     @Override
     public void onClick(View v) {
+        int id = v.getId();
+
+        if(id == playlist.getId())
+        {
+            startActivity(new Intent(MainActivity.this,PlaylistAct.class));
+        }
+        else if (id == local.getId())
+        {
+            Intent intent = new Intent(MainActivity.this, SearchResultsAct.class);
+            intent.putExtra(SONG_TYPE,LOCAL);
+            startActivity(intent);
+        }
+        else if (id == search.getId())
+        {
+
+        }
+        else if (id == downloads.getId())
+        {
+
+        }
+        else if (id == settings.getId())
+        {
+
+        }
+        else if (id == update_or_about.getId())
+        {
+
+        }
+        else if (id == forward.getId())
+        {
+            forward();
+        }
+        else if (id == backward.getId())
+        {
+            backward();
+        }
+        else if (id == pause_or_play.getId())
+        {
+            play_or_pause();
+        }
 
     }
 

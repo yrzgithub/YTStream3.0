@@ -8,6 +8,7 @@
         android:id="@+id/title_local_songs"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:text="@string/title"
         android:singleLine="true"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
@@ -19,7 +20,8 @@
         />
 
     <TextView
-        android:id="@+id/artist_path_local_songs"
+        android:id="@+id/artist"
+        android:text="@string/artist"
         android:textColor="@color/black"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
