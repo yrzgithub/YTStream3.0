@@ -308,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             retriever = new DataRetriever();
             String stream_rl = retriever.getStreamUrl(current);
             current.setStream_url(stream_rl);
+            current.download();
         }
 
         handler.post(new Runnable() {

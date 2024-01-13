@@ -1,50 +1,21 @@
 package com.example.ytstream30;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
-import android.database.DataSetObserver;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Handler;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.provider.ContactsContract;
-import android.provider.MediaStore;
+import android.os.Environment;
 import android.util.Log;
-import android.util.Size;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.bumptech.glide.Glide;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
-import com.google.android.exoplayer2.BasePlayer;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.MediaSource;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URI;
-import java.time.format.DateTimeFormatter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -145,7 +116,7 @@ class DataRetriever
 
 
 
-class Song implements Serializable
+class Song extends Thread implements Serializable
 {
     String yt_url,stream_url,thumbnail_url,title,error,publishedTime,channel,viewCount,duration_str,channel_url;
     float duration = 1;
@@ -171,8 +142,6 @@ class Song implements Serializable
 
     Song(PyObject videoMap)
     {
-        // Log.e("uruttu_video_data",videoMap.toString());
-
         Map<PyObject,PyObject> videoData = videoMap.asMap();
 
         title = videoData.getOrDefault(PyObject.fromJava("title"),null).toJava(String.class);
@@ -236,6 +205,80 @@ class Song implements Serializable
         {
             return MediaItem.fromUri(local_path);
         }
+    }
+
+    @Override
+    public void run() {
+        startDownload();
+        super.run();
+    }
+
+    public void download()
+    {
+        start();
+    }
+
+    private void startDownload()
+    {
+        try
+        {
+            assert isYt();
+            assert stream_url!=null;
+
+            // Input
+
+            URL url = new URL(stream_url);
+            URLConnection connection = url.openConnection();
+            InputStream ipStream = connection.getInputStream();
+            BufferedInputStream bufferStream = new BufferedInputStream(ipStream);
+
+            // Output
+
+            String file_name = title + " - YTStream.mp3";
+            file_name = file_name.replace("|","");
+            String downloadDirPath = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DOWNLOADS;
+
+            File file = new File(downloadDirPath,file_name);
+            FileOutputStream fOutputStream = new FileOutputStream(file);
+
+            // write
+
+            final int BUFFER_LENGTH = 1024;  // 1 MB
+
+            int total_length = connection.getContentLength();
+            byte buffer[] = new byte[BUFFER_LENGTH];
+
+            Log.e("uruttu_download",String.valueOf(total_length));
+
+            int readLength = 0;
+            int totalReadLength = 0;
+
+            while((readLength = bufferStream.read(buffer)) != -1)            // EOF = -1
+            {
+
+                fOutputStream.write(buffer);
+                totalReadLength += readLength;
+                int percent = Math.round((totalReadLength * 100)/total_length);
+
+                Log.e("uruttu_download",String.valueOf(percent));
+            }
+
+            Log.e("uruttu_download","completed");
+
+            bufferStream.close();
+            ipStream.close();
+            fOutputStream.close();
+        }
+
+        catch (Exception | Error e)
+        {
+            Log.e("uruttu_downloads",e.getMessage());
+        }
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
     }
 
     public static Song getCurrentSong()
