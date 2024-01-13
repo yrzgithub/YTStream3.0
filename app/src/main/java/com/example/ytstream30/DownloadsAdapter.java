@@ -65,7 +65,13 @@ public class DownloadsAdapter extends BaseAdapter {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
+                    int progressPercentage_ =  song.getProgressPercent();
+                    progressPercentage.setText(progressPercentage_);
 
+                    if(!song.isDownloading())
+                    {
+                        return;
+                    }
                     handler.postDelayed(this,1000);
                 }
             });

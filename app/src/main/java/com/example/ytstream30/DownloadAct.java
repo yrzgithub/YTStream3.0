@@ -17,5 +17,6 @@ public class DownloadAct extends AppCompatActivity {
         setContentView(R.layout.activity_download);
 
         list = findViewById(R.id.downloads);
+        list.setAdapter(new DownloadsAdapter(this));
     }
 }

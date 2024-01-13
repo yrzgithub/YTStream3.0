@@ -14,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -89,20 +90,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         if(getSupportActionBar()!=null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Marquee
-        title.post(new Runnable() {
-            @Override
-            public void run() {
-                String title_ = MainActivity.this.title.getText().toString();
-                int len = title_.length();
-
-                int sizeInPx = (int) title.getTextSize() * len;
-                int widthInPx = getResources().getDisplayMetrics().widthPixels;
-
-                float threshold = 1.5F;
-
-                if(sizeInPx * threshold > widthInPx)  title.setSelected(true);
-            }
-        });
+        marquee(this,title);
 
         seek.setOnSeekBarChangeListener(this);
 
@@ -412,6 +400,24 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
     public static void load_gif(ImageView v,String url)
     {
         if(v.getContext()!=null) Glide.with(v).load(url).into(v);
+    }
+
+    public static void marquee(Context context, TextView view)
+    {
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                String title_ = view.getText().toString();
+                int len = title_.length();
+
+                int sizeInPx = (int) view.getTextSize() * len;
+                int widthInPx = view.getWidth();
+
+                float threshold = 1.5F;
+
+                if(sizeInPx * threshold > widthInPx)  view.setSelected(true);
+            }
+        });
     }
 
     @Override
