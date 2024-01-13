@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -203,11 +204,9 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         }
     }
 
-    public String updateUI()
+    public void updateUI()
     {
         Song song = Song.getCurrentSong();
-
-        seek.setMax((int) song.getDuration());
 
         String stream_url = song.getStream_url();
         String title = song.getTitle();
@@ -231,23 +230,25 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
         pause_or_play.setImageResource(R.drawable.pause);
 
-        updateSeek();
+        updateSeek((int) song.getDuration());
 
-        return stream_url;
+        play(song);
     }
 
-    public void play(String stream_url)
+    public void play(Song song)
     {
         player = getPlayer();
 
-        MediaItem item = Song.getCurrentSong().getSource();
+        MediaItem item = song.getSource();
         player.setMediaItem(item);
         player.prepare();
         player.play();
     }
 
-    public void updateSeek()
+    public void updateSeek(int duration)
     {
+        seek.setMax(duration);
+
         seek_runnable = new Runnable() {
             @Override
             public void run() {
@@ -314,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         handler.post(new Runnable() {
             @Override
             public void run() {
-                play(updateUI());
+                updateUI();
             }
         });
     }
@@ -350,6 +351,10 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             intent.putExtra(SONG,Song.getCurrentSong());
             startActivity(intent);
         }
+        else if(id == R.id.download)
+        {
+
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -370,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         }
         else if (id == search.getId())
         {
-
+            getOnBackPressedDispatcher().onBackPressed();
         }
         else if (id == downloads.getId())
         {

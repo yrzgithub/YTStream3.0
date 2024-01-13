@@ -123,6 +123,7 @@ class Song extends Thread implements Serializable
     boolean yt = true;
     String local_path;
     static Song current_song;
+    int progressPercent = 0;
     final static String SONG_TYPE = "song_type";
     final static String LOCAL = "local";
     final static String YT = "yt";
@@ -248,8 +249,6 @@ class Song extends Thread implements Serializable
             int total_length = connection.getContentLength();
             byte buffer[] = new byte[BUFFER_LENGTH];
 
-            Log.e("uruttu_download",String.valueOf(total_length));
-
             int readLength = 0;
             int totalReadLength = 0;
 
@@ -258,22 +257,28 @@ class Song extends Thread implements Serializable
 
                 fOutputStream.write(buffer);
                 totalReadLength += readLength;
-                int percent = Math.round((totalReadLength * 100)/total_length);
-
-                Log.e("uruttu_download",String.valueOf(percent));
+                progressPercent = Math.round((totalReadLength * 100)/total_length);
             }
-
-            Log.e("uruttu_download","completed");
 
             bufferStream.close();
             ipStream.close();
             fOutputStream.close();
         }
 
-        catch (Exception | Error e)
+        catch (IOException e)
         {
             Log.e("uruttu_downloads",e.getMessage());
         }
+    }
+
+    public int getProgressPercent()
+    {
+        return progressPercent;
+    }
+
+    public boolean isDownloading()
+    {
+        return progressPercent<100;
     }
 
     @Override

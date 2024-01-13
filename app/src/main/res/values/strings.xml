@@ -22,4 +22,5 @@
     <string name="delete">delete</string>
     <string name="edit">edit</string>
     <string name="artist">artist</string>
+    <string name="download">Download</string>
 </resources>
