@@ -35,7 +35,9 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
-            android:scaleY="4" />
+            android:progress="50"
+            android:progressTint="#00FF09"
+            android:scaleY="5" />
 
         <TextView
             android:id="@+id/progress_txt"

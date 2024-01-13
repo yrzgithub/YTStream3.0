@@ -1,7 +1,11 @@
 package com.example.ytstream30;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
@@ -18,6 +22,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 class DataRetriever
@@ -124,6 +129,7 @@ class Song extends Thread implements Serializable
     String local_path;
     static Song current_song;
     int progressPercent = 0;
+    boolean err = false,download_started = false;
     final static String SONG_TYPE = "song_type";
     final static String LOCAL = "local";
     final static String YT = "yt";
@@ -214,9 +220,21 @@ class Song extends Thread implements Serializable
         super.run();
     }
 
-    public void download()
+    public void download(Context context)
     {
+        if(download_started || isDownloading())
+        {
+            return;
+        }
+
+        Toast.makeText(context,"Downloading",Toast.LENGTH_SHORT).show();
+        DownloadsAdapter.addSong(this);
         start();
+    }
+
+    public boolean isDownloadable()
+    {
+        return stream_url!=null;
     }
 
     private void startDownload()
@@ -225,6 +243,8 @@ class Song extends Thread implements Serializable
         {
             assert isYt();
             assert stream_url!=null;
+
+            download_started = true;
 
             // Input
 
@@ -258,6 +278,8 @@ class Song extends Thread implements Serializable
                 fOutputStream.write(buffer);
                 totalReadLength += readLength;
                 progressPercent = Math.round((totalReadLength * 100)/total_length);
+
+                Log.e("download_progress",String.valueOf(progressPercent));
             }
 
             bufferStream.close();
@@ -265,10 +287,16 @@ class Song extends Thread implements Serializable
             fOutputStream.close();
         }
 
-        catch (IOException e)
+        catch (Error | Exception e)
         {
-            Log.e("uruttu_downloads",e.getMessage());
+            err = true;
+            Log.e("download_progress",e.getMessage());
         }
+    }
+
+    public boolean isError()
+    {
+        return err;
     }
 
     public int getProgressPercent()
@@ -278,7 +306,7 @@ class Song extends Thread implements Serializable
 
     public boolean isDownloading()
     {
-        return progressPercent<100;
+        return download_started && progressPercent<100;
     }
 
     @Override
@@ -432,5 +460,15 @@ class Song extends Thread implements Serializable
             duration_str = String.format("%d:%02d",(int) Math.round(duration/60),(int) Math.round(duration%60));
         }
         this.duration = duration;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+
+        if(!(obj instanceof Song)) return false;
+
+        Song song = (Song) obj;
+
+        return song.getYt_url().equals(getYt_url());
     }
 }

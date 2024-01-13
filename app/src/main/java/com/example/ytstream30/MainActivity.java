@@ -3,6 +3,7 @@ package com.example.ytstream30;
 import static com.example.ytstream30.PlaylistSongsAdapter.PLAYLIST;
 import static com.example.ytstream30.Song.LOCAL;
 import static com.example.ytstream30.Song.SONG_TYPE;
+import static com.example.ytstream30.Song.current_song;
 import static com.google.common.io.Resources.getResource;
 
 import androidx.annotation.NonNull;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
     static ExoPlayer player;
     Runnable seek_runnable;
     DataRetriever retriever;
-    MenuItem add_menu;
+    MenuItem add_menu,download_menu;
     LinearLayout playlist,local,search,downloads,settings,update_or_about,developer_contact;
     Handler handler = new Handler();
 
@@ -208,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         if(song.isYt())
         {
             MainActivity.load_gif(thumbnail,thumbnail_url);
+            if(download_menu!=null) download_menu.setVisible(true);
         }
         else
         {
@@ -297,7 +299,6 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             retriever = new DataRetriever();
             String stream_rl = retriever.getStreamUrl(current);
             current.setStream_url(stream_rl);
-            current.download();
         }
 
         handler.post(new Runnable() {
@@ -314,6 +315,9 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
         add_menu = menu.findItem(R.id.add);
         add_menu.setEnabled(Song.getCurrentSong()!=null && !Song.getCurrentSong().isYt());
+
+        download_menu = menu.findItem(R.id.download);
+        download_menu.setVisible(Song.getCurrentSong()!=null && Song.getCurrentSong().isDownloadable());
 
         ShowSuggestions suggestions = new ShowSuggestions(this,menu);
         suggestions.setPlayer(player);
@@ -341,7 +345,8 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         }
         else if(id == R.id.download)
         {
-
+            Toast.makeText(this,"Downloading",Toast.LENGTH_SHORT).show();
+            Song.getCurrentSong().download(this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -367,7 +372,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         }
         else if (id == downloads.getId())
         {
-
+            startActivity(new Intent(this, DownloadAct.class));
         }
         else if (id == settings.getId())
         {

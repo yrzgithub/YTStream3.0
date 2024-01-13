@@ -2,7 +2,9 @@ package com.example.ytstream30;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -24,14 +26,14 @@ public class DownloadsAdapter extends BaseAdapter {
         this.activity = activity;
     }
 
+    public static void addSong(Song song)
+    {
+        songs.add(song);
+    }
+
     @Override
     public int getCount() {
         return songs.size();
-    }
-
-    public static void add(Song song)
-    {
-        songs.add(song);
     }
 
     @Override
@@ -66,18 +68,26 @@ public class DownloadsAdapter extends BaseAdapter {
                 @Override
                 public void run() {
                     int progressPercentage_ =  song.getProgressPercent();
-                    progressPercentage.setText(progressPercentage_);
+                    progressPercentage.setText(progressPercentage_ + "%");
+
+                    progressBar.setProgress(progressPercentage_,true);
 
                     if(!song.isDownloading())
                     {
                         return;
                     }
+
+                    if(song.isError())
+                    {
+                        progressPercentage.setTextColor(Color.RED);
+                        progressPercentage.setText("Download Failed");
+                    }
+
                     handler.postDelayed(this,1000);
                 }
             });
         }
 
         return convertView;
-
     }
 }
