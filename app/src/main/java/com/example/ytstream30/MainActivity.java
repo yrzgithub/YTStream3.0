@@ -325,6 +325,14 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         SearchView search = (SearchView) menu.findItem(R.id.search).getActionView();
         AutoCompleteTextView auto = (AutoCompleteTextView) search.findViewById(androidx.appcompat.R.id.search_src_text);
 
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this,"click",Toast.LENGTH_SHORT).show();;
+                drawer.closeDrawers();
+            }
+        });
+
         search.setOnQueryTextListener(suggestions);
         auto.setOnItemClickListener(suggestions);
 

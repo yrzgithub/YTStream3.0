@@ -485,6 +485,6 @@ class Song extends Thread implements Serializable
 
         Song song = (Song) obj;
 
-        return song.getYt_url().equals(getYt_url());
+        return song.isYt() ? song.getYt_url().equals(getYt_url()) : song.getLocal_path().equals(getLocal_path());
     }
 }

@@ -36,6 +36,7 @@
         android:gravity="center">
 
         <ImageView
+            android:id="@+id/pop"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center"

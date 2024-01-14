@@ -93,6 +93,7 @@ public class PlayListManager {
     {
         List<Song> sources = storage.readObject(name);
         sources.remove(song_);
+
         return storage.writeObject(name,sources);
     }
 

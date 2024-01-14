@@ -4,12 +4,13 @@ import static com.example.ytstream30.MainActivity.SONG;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.provider.MediaStore;
-import android.view.LayoutInflater;
+import android.view.Gravity;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -24,13 +25,14 @@ public class PlaylistSongsAdapter extends BaseAdapter {
     static final String PLAYLIST = "playlist_name";
     static final String SONG_INDEX = "song_index";
     String playlist_name;
+    PlayListManager manager;
 
     PlaylistSongsAdapter(Activity act,String playlist_name)
     {
         this.act = act;
         this.playlist_name = playlist_name;
 
-        PlayListManager manager = new PlayListManager(act,playlist_name);
+        manager = new PlayListManager(act,playlist_name);
         sources.addAll(manager.getSources());
     }
 
@@ -60,14 +62,41 @@ public class PlaylistSongsAdapter extends BaseAdapter {
             String title_ = source.getTitle();
 
             TextView title = convertView.findViewById(R.id.title);
-            title.setText(title_);
-
             ImageView sourceImg = convertView.findViewById(R.id.source);
+            ImageView popImage = convertView.findViewById(R.id.pop);
+
+            title.setText(title_);
 
             if(source.isYt())
             {
                 Glide.with(sourceImg).load(R.drawable.youtube).into(sourceImg);
             }
+
+            popImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu menu = new PopupMenu(act,v, Gravity.BOTTOM);
+                    menu.inflate(R.menu.playlist_song_menu);
+
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int id = item.getItemId();
+
+                            if(id == R.id.delete)
+                            {
+                                manager.deleteFromPlaylist(source);
+                                sources.remove(position);
+                                notifyDataSetChanged();
+                            }
+
+                            return false;
+                        }
+                    });
+
+                    menu.show();
+                }
+            });
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
