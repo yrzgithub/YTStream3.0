@@ -222,7 +222,7 @@ class Song extends Thread implements Serializable
 
     public void download(Context context)
     {
-        if(download_started || isDownloading())
+        if(!download_started && progressPercent>=100)
         {
             return;
         }
@@ -230,6 +230,15 @@ class Song extends Thread implements Serializable
         Toast.makeText(context,"Downloading",Toast.LENGTH_SHORT).show();
         DownloadsAdapter.addSong(this);
         start();
+    }
+
+    public File getDownloadFile()
+    {
+        String file_name = title + " - YTStream.mp3";
+        file_name = file_name.replace("|","");
+        String downloadDirPath = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DOWNLOADS;
+
+        return new File(downloadDirPath,file_name);
     }
 
     public boolean isDownloadable()
@@ -255,11 +264,7 @@ class Song extends Thread implements Serializable
 
             // Output
 
-            String file_name = title + " - YTStream.mp3";
-            file_name = file_name.replace("|","");
-            String downloadDirPath = Environment.getExternalStorageDirectory() + File.separator + Environment.DIRECTORY_DOWNLOADS;
-
-            File file = new File(downloadDirPath,file_name);
+            File file = getDownloadFile();
             FileOutputStream fOutputStream = new FileOutputStream(file);
 
             // write
@@ -290,7 +295,7 @@ class Song extends Thread implements Serializable
         catch (Error | Exception e)
         {
             err = true;
-            Log.e("download_progress",e.getMessage());
+            deleteFile();
         }
     }
 
@@ -309,8 +314,19 @@ class Song extends Thread implements Serializable
         return download_started && progressPercent<100;
     }
 
+    public void deleteFile()
+    {
+        File file = getDownloadFile();
+
+        if(file!=null && file.exists())
+        {
+            file.deleteOnExit();
+        }
+    }
+
     @Override
     public void interrupt() {
+        deleteFile();
         super.interrupt();
     }
 

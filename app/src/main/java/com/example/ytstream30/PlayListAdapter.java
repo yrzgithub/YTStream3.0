@@ -103,6 +103,8 @@ public class PlayListAdapter extends BaseAdapter {
                         playlist_names.remove(position);
                         playlist_names.add(position,new_name);
 
+                        Log.e("playlistadapter",playlist_names.toString());
+
                         notifyDataSetChanged();
                     }
                 }

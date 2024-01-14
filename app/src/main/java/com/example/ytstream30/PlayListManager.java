@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 public class PlayListManager {
 
-    File file;
     String name;
     DataStorage<List<Song>> storage;
 
@@ -84,9 +83,10 @@ public class PlayListManager {
 
     public void editPlaylistName(String new_name)
     {
-        List<Song> songs = storage.readObject(name);
-        deletePlayList();
-        createPlayList(new_name,songs);
+
+
+        File file = new File(storage.getPlaylist_dir(),this.name);
+        file.renameTo(new File(storage.getPlaylist_dir(),new_name));
     }
 
     public boolean deleteFromPlaylist(Song song_)

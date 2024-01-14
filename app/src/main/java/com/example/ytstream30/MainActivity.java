@@ -15,6 +15,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -208,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
         if(song.isYt())
         {
-            MainActivity.load_gif(thumbnail,thumbnail_url);
+            MainActivity.load_gif(this,thumbnail,thumbnail_url);
             if(download_menu!=null) download_menu.setVisible(true);
         }
         else
@@ -221,8 +222,6 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         pause_or_play.setImageResource(R.drawable.pause);
 
         updateSeek((int) song.getDuration());
-
-        play(song);
     }
 
     public void play(Song song)
@@ -305,6 +304,7 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
             @Override
             public void run() {
                 updateUI();
+                play(current);
             }
         });
     }
@@ -345,7 +345,6 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         }
         else if(id == R.id.download)
         {
-            Toast.makeText(this,"Downloading",Toast.LENGTH_SHORT).show();
             Song.getCurrentSong().download(this);
         }
 
@@ -358,7 +357,9 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
 
         if(id == playlist.getId())
         {
-            startActivity(new Intent(MainActivity.this,PlaylistAct.class));
+            Intent intent = new Intent(MainActivity.this,PlaylistAct.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
         else if (id == local.getId())
         {
@@ -402,9 +403,9 @@ public class MainActivity extends AppCompatActivity implements Player.Listener, 
         Glide.with(v).load(id).into(v);
     }
 
-    public static void load_gif(ImageView v,String url)
+    public static void load_gif(Activity activity,ImageView v, String url)
     {
-        if(v.getContext()!=null) Glide.with(v).load(url).into(v);
+        if(v.getContext()!=null && !activity.isDestroyed()) Glide.with(v).load(url).into(v);
     }
 
     public static void marquee(Context context, TextView view)

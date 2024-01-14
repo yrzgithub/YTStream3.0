@@ -63,6 +63,8 @@ public class DownloadsAdapter extends BaseAdapter {
             String title_ = song.getTitle();
             title.setText(title_);
 
+            Log.e("downloads_adapter",title_);
+
             Handler handler = new Handler();
             handler.post(new Runnable() {
                 @Override
