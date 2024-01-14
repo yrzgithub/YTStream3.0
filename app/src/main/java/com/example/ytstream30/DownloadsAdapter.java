@@ -70,7 +70,7 @@ public class DownloadsAdapter extends BaseAdapter {
                     int progressPercentage_ =  song.getProgressPercent();
                     progressPercentage.setText(progressPercentage_ + "%");
 
-                    progressBar.setProgress(progressPercentage_,true);
+                    progressBar.setProgress(progressPercentage_);
 
                     if(!song.isDownloading())
                     {
